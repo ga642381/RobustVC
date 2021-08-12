@@ -34,8 +34,7 @@ class Wav2Mel(torch.nn.Module):
         self.ref_db = ref_db
         self.dc_db = dc_db
 
-        self.sox_effects = SoxEffects(
-            sample_rate, norm_db)
+        self.sox_effects = SoxEffects(sample_rate, norm_db)
         self.log_melspectrogram = LogMelspectrogram(
             sample_rate,
             fft_window_ms,
@@ -66,11 +65,7 @@ class Wav2Mel(torch.nn.Module):
 class SoxEffects(torch.nn.Module):
     """Transform waveform tensors."""
 
-    def __init__(
-        self,
-        sample_rate: int,
-        norm_db: float
-    ):
+    def __init__(self, sample_rate: int, norm_db: float):
         super().__init__()
         self.effects = [
             ["channels", "1"],  # convert to mono
@@ -86,8 +81,7 @@ class SoxEffects(torch.nn.Module):
         ]
 
     def forward(self, wav_tensor: torch.Tensor, sample_rate: int) -> torch.Tensor:
-        wav_tensor, _ = apply_effects_tensor(
-            wav_tensor, sample_rate, self.effects)
+        wav_tensor, _ = apply_effects_tensor(wav_tensor, sample_rate, self.effects)
         return wav_tensor
 
 
@@ -128,8 +122,7 @@ class LogMelspectrogram(torch.nn.Module):
             ),
             dim=-1,
         )
-        mel_tensor = self.melspectrogram(
-            wav_tensor).squeeze(0)  # (n_mels, time)
+        mel_tensor = self.melspectrogram(wav_tensor).squeeze(0)  # (n_mels, time)
         mel_tensor = 20 * mel_tensor.clamp(min=1e-9).log10()
         mel_tensor = (mel_tensor - self.ref_db + self.dc_db) / self.dc_db
         return mel_tensor

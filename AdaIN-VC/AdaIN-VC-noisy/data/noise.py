@@ -11,7 +11,7 @@ def noise_gen(x):
     return torch.zeros_like(x).uniform_()
 
 
-class WavAug():
+class WavAug:
     def __init__(self, sample_rate=16000, p_add=1, p_reverb=0.5, p_band=0.5):
         self.sample_rate = sample_rate
         self.p_add = p_add
@@ -20,26 +20,34 @@ class WavAug():
 
     def add_noise(self, x: torch.Tensor) -> torch.Tensor:
         """
+        reference : http://sox.sourceforge.net/sox.html
         * additive_noise
-            : snr
+            : snr (the smaller the noiser)
         * reverberation
-            : 
-            :room_size
-        * band_rejection
+            : reverberance (50%)
+            : HF-dampling (50%)
+            : room-scale (100%)
+        * band_rejection (sinc)
+            : -a 120 (attenuation of 120dB)
+            : (freqHP - freqLP ; if freqHP > freqLp then bandreject)
         """
         wavaug_chain = augment.EffectChain()
 
-        if (random.random() < self.p_add):
+        if random.random() < self.p_add:
             noise_generator = partial(noise_gen, x=x)
-            wavaug_chain = wavaug_chain.additive_noise(
-                noise_generator, snr=15)
+            wavaug_chain = wavaug_chain.additive_noise(noise_generator, snr=15)
 
-        if (random.random() < self.p_reverb):
+        if random.random() < self.p_reverb:
             wavaug_chain = wavaug_chain.reverb(
-                50, 50, np.random.randint(0, 101)).channels(1)
+                50, 50, np.random.randint(0, 101)
+            ).channels(1)
 
-        if (random.random() < self.p_band):
-            wavaug_chain = wavaug_chain.sinc('-a', '120', '500-100')
+        if random.random() < self.p_band:
+            band_width = random.randint(50, 150)
+            freq_LP = random.randint(100, 500)
+            wavaug_chain = wavaug_chain.sinc(
+                "-a", "120", f"{freq_LP+band_width}-{freq_LP}"
+            )
 
-        noisy_wav = wavaug_chain.apply(x, src_info={'rate': self.sample_rate})
+        noisy_wav = wavaug_chain.apply(x, src_info={"rate": self.sample_rate})
         return noisy_wav

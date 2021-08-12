@@ -10,6 +10,7 @@ from tqdm.auto import trange
 
 from data import InfiniteDataLoader, SpeakerDataset, infinite_iterator
 from model import AdaINVC
+from data.VCTK_split import train_valid_test
 
 
 def main(
@@ -29,12 +30,15 @@ def main(
     config = yaml.load(open(config_file, "r"), Loader=yaml.FullLoader)
 
     # Prepare data
-    data = SpeakerDataset(data_dir, sample_rate=16000, n_uttrs=n_uttrs)
-
-    # split train/valid sets
-    train_set, valid_set = random_split(
-        data, [int(len(data) * 0.8), len(data) - int(len(data) * 0.8)]
+    train_set = SpeakerDataset(
+        "train", train_valid_test["train"], data_dir, sample_rate=16000
     )
+    valid_set = SpeakerDataset(
+        "valid", train_valid_test["valid"], data_dir, sample_rate=16000
+    )
+
+    print(f"train_set spks : {len(train_set)}")
+    print(f"valid_set spks : {len(valid_set)}")
 
     # construct loader
     train_loader = InfiniteDataLoader(
@@ -127,8 +131,7 @@ def main(
             writer.add_scalar("validation/rec_loss", valid_loss, step + 1)
 
         # update tqdm bar
-        pbar.set_postfix({"rec_loss": rec_loss.item(),
-                         "kl_loss": kl_loss.item()})
+        pbar.set_postfix({"rec_loss": rec_loss.item(), "kl_loss": kl_loss.item()})
 
 
 if __name__ == "__main__":
