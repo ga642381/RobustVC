@@ -1,5 +1,9 @@
 # user defined
-processed/
+processed*/
+record*/
+vocoder/
+sample/
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

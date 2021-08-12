@@ -12,8 +12,6 @@ class Wav2Mel(torch.nn.Module):
         self,
         sample_rate: float = 16000,
         norm_db: float = -3.0,
-        sil_threshold: float = 1.0,
-        sil_duration: float = 0.1,
         fft_window_ms: float = 50.0,
         fft_hop_ms: float = 12.5,
         n_fft: int = 2048,
@@ -27,8 +25,6 @@ class Wav2Mel(torch.nn.Module):
 
         self.sample_rate = sample_rate
         self.norm_db = norm_db
-        self.sil_threshold = sil_threshold
-        self.sil_duration = sil_duration
         self.fft_window_ms = fft_window_ms
         self.fft_hop_ms = fft_hop_ms
         self.n_fft = n_fft
@@ -39,7 +35,7 @@ class Wav2Mel(torch.nn.Module):
         self.dc_db = dc_db
 
         self.sox_effects = SoxEffects(
-            sample_rate, norm_db, sil_threshold, sil_duration)
+            sample_rate, norm_db)
         self.log_melspectrogram = LogMelspectrogram(
             sample_rate,
             fft_window_ms,
@@ -51,6 +47,10 @@ class Wav2Mel(torch.nn.Module):
             ref_db,
             dc_db,
         )
+
+    def mel(self, wav_tensor: torch.Tensor) -> torch.Tensor:
+        mel_tensor = self.log_melspectrogram(wav_tensor)
+        return mel_tensor
 
     def forward(self, wav_tensor: torch.Tensor, sample_rate: int) -> torch.Tensor:
         # 1. sox effect
@@ -69,24 +69,20 @@ class SoxEffects(torch.nn.Module):
     def __init__(
         self,
         sample_rate: int,
-        norm_db: float,
-        sil_threshold: float,
-        sil_duration: float,
+        norm_db: float
     ):
         super().__init__()
         self.effects = [
             ["channels", "1"],  # convert to mono
             ["rate", f"{sample_rate}"],  # resample
             ["norm", f"{norm_db}"],  # normalize to -3 dB
-            [
-                "silence",
-                "1",
-                f"{sil_duration}",
-                f"{sil_threshold}%",
-                "-1",
-                f"{sil_duration}",
-                f"{sil_threshold}%",
-            ],  # remove silence throughout the file
+            ["vad"],
+            ["reverse"],
+            ["vad"],
+            ["reverse"]
+            # remove silence throughout the file
+            # vad only trim beginning of the utternece
+            # use "reverse" to trim the end of the utterence
         ]
 
     def forward(self, wav_tensor: torch.Tensor, sample_rate: int) -> torch.Tensor:
