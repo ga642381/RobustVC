@@ -24,7 +24,7 @@ def parse_args():
     parser.add_argument("data_dirs", type=str, nargs="+")
     parser.add_argument("feature_name", type=str)
     parser.add_argument("out_dir", type=str)
-    parser.add_argument("wav2vec_path", type=str, default=None)
+    parser.add_argument("--wav2vec_path", type=str, default=None)
     parser.add_argument("--trim_method", choices=["librosa", "vad"], default="vad")
     parser.add_argument("--n_workers", type=int, default=cpu_count())
 
@@ -83,7 +83,14 @@ def main(
             feat = feat_extractor.get_feature(wav)[0]
             mel = mel_extractor.get_feature(wav)[0]
         fd, temp_file = mkstemp(suffix=".tar", prefix="utterance-", dir=out_dir_path)
-        torch.save({"feat": feat.detach().cpu(), "mel": mel.detach().cpu()}, temp_file)
+        torch.save(
+            {
+                "feat": feat.detach().cpu(),
+                "wav": wav.detach().cpu(),
+                "mel": mel.detach().cpu(),
+            },
+            temp_file,
+        )
         os.close(fd)
 
         if speaker_name not in speaker_infos.keys():

@@ -42,10 +42,16 @@ def main(
 
     # construct loader
     train_loader = InfiniteDataLoader(
-        train_set, batch_size=n_spks, shuffle=True, num_workers=8
+        train_set,
+        batch_size=n_spks,
+        shuffle=True,
+        num_workers=8,
     )
     valid_loader = InfiniteDataLoader(
-        valid_set, batch_size=n_spks, shuffle=True, num_workers=8
+        valid_set,
+        batch_size=n_spks,
+        shuffle=True,
+        num_workers=8,
     )
 
     # construct iterator

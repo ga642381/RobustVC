@@ -12,8 +12,11 @@ def noise_gen(x):
 
 
 class WavAug:
-    def __init__(self, sample_rate=16000, p_add=1, p_reverb=0.5, p_band=0.5):
+    def __init__(
+        self, sample_rate=16000, p_clean=0.5, p_add=1, p_reverb=0.5, p_band=0.5
+    ):
         self.sample_rate = sample_rate
+        self.p_clean = p_clean
         self.p_add = p_add
         self.p_reverb = p_reverb
         self.p_band = p_band
@@ -32,6 +35,9 @@ class WavAug:
             : (freqHP - freqLP ; if freqHP > freqLp then bandreject)
         """
         wavaug_chain = augment.EffectChain()
+        if random.random() < self.p_clean:
+            # early return clean wav
+            return x
 
         if random.random() < self.p_add:
             noise_generator = partial(noise_gen, x=x)
