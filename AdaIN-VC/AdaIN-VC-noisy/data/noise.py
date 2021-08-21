@@ -20,6 +20,7 @@ class WavAug:
         self.p_add = p_add
         self.p_reverb = p_reverb
         self.p_band = p_band
+        self.snr_list = [0, 5, 10, 15]
 
     def add_noise(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -41,7 +42,9 @@ class WavAug:
 
         if random.random() < self.p_add:
             noise_generator = partial(noise_gen, x=x)
-            wavaug_chain = wavaug_chain.additive_noise(noise_generator, snr=15)
+            wavaug_chain = wavaug_chain.additive_noise(
+                noise_generator, snr=random.choice(self.snr_list)
+            )
 
         if random.random() < self.p_reverb:
             wavaug_chain = wavaug_chain.reverb(

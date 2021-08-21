@@ -14,7 +14,9 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 import numpy as np
 
+
 from data import IntraSpeakerDataset, collate_batch, plot_attn
+from data import train_valid_test
 from models import S2VC, get_cosine_schedule_with_warmup
 
 random.seed(42)
@@ -38,12 +40,11 @@ def parse_args():
     parser.add_argument("--accu_steps", type=int, default=2)
     parser.add_argument("--batch_size", type=int, default=6)
     parser.add_argument("--n_workers", type=int, default=8)
-    parser.add_argument('-s', "--src_feat", type=str, default='cpc')
-    parser.add_argument('-r', "--ref_feat", type=str, default='cpc')
+    parser.add_argument("-s", "--src_feat", type=str, default="cpc")
+    parser.add_argument("-r", "--ref_feat", type=str, default="cpc")
     parser.add_argument("--preload", action="store_true")
     parser.add_argument("--lr_reduction", action="store_true")
     parser.add_argument("--comment", type=str)
-
 
     return vars(parser.parse_args())
 
@@ -63,19 +64,20 @@ def model_fn(batch, model, criterion, device):
     ref_masks = tgt_masks
 
     outs, attns = model(srcs, refs, src_masks=src_masks, ref_masks=ref_masks)
-            
+
     losses = []
-    for out, tgt_mel, attn, overlap_len in zip(outs.unbind(), tgt_mels.unbind(), attns[-1], overlap_lens):
+    for out, tgt_mel, attn, overlap_len in zip(
+        outs.unbind(), tgt_mels.unbind(), attns[-1], overlap_lens
+    ):
         loss = criterion(out[:, :overlap_len], tgt_mel[:, :overlap_len])
         losses.append(loss)
     try:
         attns_plot = []
         for i in range(len(attns)):
-            attns_plot.append(attns[i][0][:overlap_lens[0], :overlap_lens[0]])
+            attns_plot.append(attns[i][0][: overlap_lens[0], : overlap_lens[0]])
     except:
         pass
 
-        
     return sum(losses) / len(losses), attns_plot
 
 
@@ -123,16 +125,36 @@ def main(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     metadata_path = Path(data_dir) / "metadata.json"
-    
-    dataset = IntraSpeakerDataset(
-        data_dir, metadata_path, src_feat, ref_feat, n_samples, preload
+
+    # dataset = IntraSpeakerDataset(
+    #     data_dir, metadata_path, src_feat, ref_feat, n_samples, preload
+    # )
+    trainset = IntraSpeakerDataset(
+        "train",
+        train_valid_test["train"],
+        data_dir,
+        metadata_path,
+        src_feat,
+        ref_feat,
+        n_samples,
+        preload,
     )
-    input_dim, ref_dim, tgt_dim = dataset.get_feat_dim()
-    lengths = [trainlen := int(0.9 * len(dataset)), len(dataset) - trainlen]
-    trainset, validset = random_split(dataset, lengths)
-    print(f'Input dim: {input_dim}, Reference dim: {ref_dim}, Target dim: {tgt_dim}')
-    model = S2VC(input_dim, ref_dim).to(device)
-    model = torch.jit.script(model)
+
+    validset = IntraSpeakerDataset(
+        "valid",
+        train_valid_test["valid"],
+        data_dir,
+        metadata_path,
+        src_feat,
+        ref_feat,
+        n_samples,
+        preload,
+    )
+
+    # input_dim, ref_dim, tgt_dim = trainset.get_feat_dim()
+    # lengths = [trainlen := int(0.9 * len(dataset)), len(dataset) - trainlen]
+    # trainset, validset = random_split(dataset, lengths)
+    # print(f"Input dim: {input_dim}, Reference dim: {ref_dim}, Target dim: {tgt_dim}")
 
     train_loader = DataLoader(
         trainset,
@@ -155,6 +177,11 @@ def main(
     )
     train_iterator = iter(train_loader)
 
+    input_dim = 256
+    ref_dim = 256
+    model = S2VC(input_dim, ref_dim).to(device)
+    model = torch.jit.script(model)
+
     if comment is not None:
         log_dir = "logs/"
         log_dir += datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
@@ -163,7 +190,6 @@ def main(
 
     save_dir_path = Path(save_dir)
     save_dir_path.mkdir(parents=True, exist_ok=True)
-
 
     learning_rate = 5e-5
     criterion = nn.L1Loss()
@@ -177,8 +203,8 @@ def main(
 
     for step in range(total_steps):
         if step == 40002:
-            file = open('completed.txt', 'a')
-            print(f'{comment} completed', file=file)
+            file = open("completed.txt", "a")
+            print(f"{comment} completed", file=file)
             break
         batch_loss = 0.0
 
@@ -249,7 +275,6 @@ def main(
             model.to(device)
             pbar.write(f"Step {step + 1}, best model saved. (loss={best_loss:.4f})")
 
-        
     pbar.close()
 
 

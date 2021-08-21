@@ -27,7 +27,6 @@ def parse_args():
     parser.add_argument("--wav2vec_path", type=str, default=None)
     parser.add_argument("--trim_method", choices=["librosa", "vad"], default="vad")
     parser.add_argument("--n_workers", type=int, default=cpu_count())
-
     parser.add_argument("--sample_rate", type=int, default=16000)
 
     return vars(parser.parse_args())
@@ -45,6 +44,7 @@ def main(
 ):
     """Main function."""
 
+    # === output path === #
     out_dir_path = Path(out_dir)
 
     if out_dir_path.exists():
@@ -54,15 +54,17 @@ def main(
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    # === dataset === #
     dataset = PreprocessDataset(data_dirs, trim_method, sample_rate)
     dataloader = DataLoader(
         dataset, batch_size=1, shuffle=False, drop_last=False, num_workers=n_workers
     )
 
+    # === speaker === #
     speaker_infos = {}
     speaker_infos["feature_name"] = feature_name
 
-    pbar = tqdm.tqdm(total=len(dataset), ncols=0)
+    # === feature === #
     mapping = {
         "apc": "fbank",
         "timit_posteriorgram": "fbank",
@@ -71,6 +73,9 @@ def main(
     }
     feat_extractor = FeatureExtractor(feature_name, wav2vec_path, device)
     mel_extractor = FeatureExtractor(mapping[feature_name], wav2vec_path, device)
+
+    # === loop dataloader === #
+    pbar = tqdm.tqdm(total=len(dataset), ncols=0)
     for speaker_name, audio_path, wav in dataloader:
         if wav.size(-1) < 10:
             continue
@@ -106,6 +111,7 @@ def main(
 
         pbar.update(dataloader.batch_size)
 
+    # === metadata === #
     with open(out_dir_path / "metadata.json", "w") as f:
         json.dump(speaker_infos, f, indent=2)
 
