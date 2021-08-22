@@ -202,10 +202,10 @@ def main(
     pbar = tqdm(total=valid_steps, ncols=0, desc="Train", unit=" step")
 
     for step in range(total_steps):
-        if step == 40002:
-            file = open("completed.txt", "a")
-            print(f"{comment} completed", file=file)
-            break
+        # if step == 40002:
+        #     file = open("completed.txt", "a")
+        #     print(f"{comment} completed", file=file)
+        #     break
         batch_loss = 0.0
 
         for _ in range(accu_steps):
