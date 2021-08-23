@@ -11,8 +11,9 @@ import logging
 import torch
 
 
-logging.basicConfig(level=logging.INFO,
-                    format='[%(levelname)s] %(asctime)-s %(name)s: %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="[%(levelname)s] %(asctime)-s %(name)s: %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -35,9 +36,7 @@ def parse_args():
     return vars(parser.parse_args())
 
 
-def conversion(
-    inferencer, device, root, metadata, source_dir, target_dir, output_dir
-):
+def conversion(inferencer, device, root, metadata, source_dir, target_dir, output_dir):
     """Do conversion and save the output of voice conversion model."""
     metadata["vc_model"] = root
     mel_output_dir = output_dir / "mel_files"
@@ -88,8 +87,7 @@ def main(
 
     # import Inferencer module
     inferencer_path = str(Path(root) / "inferencer").replace("/", ".")
-    Inferencer = getattr(importlib.import_module(
-        inferencer_path), "Inferencer")
+    Inferencer = getattr(importlib.import_module(inferencer_path), "Inferencer")
 
     inferencer = Inferencer(root)
     device = inferencer.device
@@ -99,8 +97,11 @@ def main(
     metadata = json.load(open(metadata_path))
     logger.info("Metadata list is loaded from %s.", metadata_path)
 
-    output_dir = Path(output_dir) / Path(root).stem / \
-        f"{metadata['source_corpus']}2{metadata['target_corpus']}"
+    output_dir = (
+        Path(output_dir)
+        / Path(root).stem
+        / f"{metadata['source_corpus']}2{metadata['target_corpus']}"
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
 
     if reload:
@@ -113,16 +114,23 @@ def main(
     waveforms = []
     max_memory_use = conv_mels[0].size(0) * batch_size
 
+    # for AdaIN-VC
     with torch.no_grad():
         pbar = tqdm(total=metadata["n_samples"])
+        # for mel in conv_mels:
+        #     wav = inferencer.spectrogram2waveform([mel.squeeze(0).data.T])
+        #     wav = wav[0].data.cpu().numpy()
+        #     waveforms.append(wav)
+        #     pbar.update(1)
+
         left = 0
-        while (left < metadata["n_samples"]):
+        while left < metadata["n_samples"]:
             batch_size = max_memory_use // conv_mels[left].size(0) - 1
             right = left + min(batch_size, metadata["n_samples"] - left)
-            waveforms.extend(
-                inferencer.spectrogram2waveform(conv_mels[left:right]))
+            waveforms.extend(inferencer.spectrogram2waveform(conv_mels[left:right]))
             pbar.update(batch_size)
             left += batch_size
+
         pbar.close()
 
     for pair, waveform in tqdm(zip(metadata["pairs"], waveforms), total=len(waveforms)):
