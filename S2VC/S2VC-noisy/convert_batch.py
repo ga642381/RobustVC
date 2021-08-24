@@ -27,10 +27,8 @@ def parse_args():
                         default="checkpoints/cpc-cpc.pt")
     parser.add_argument("-s", "--src_feat_name", default="cpc")
     parser.add_argument("-r", "--ref_feat_name", default="cpc")
-    parser.add_argument("-w", "--wav2vec_path",
-                        default="checkpoints/wav2vec_small.pt")
-    parser.add_argument("-v", "--vocoder_path",
-                        default="checkpoints/vocoder.pt")
+    parser.add_argument("-w", "--wav2vec_path", default=None)
+    parser.add_argument("-v", "--vocoder_path", default=None)
 
     parser.add_argument("--sample_rate", type=int, default=16000)
 
@@ -58,7 +56,7 @@ def main(
     print(f"[INFO] {src_feat_name} is loaded")
 
     model = torch.jit.load(ckpt_path).to(device).eval()
-    print("[INFO] FragmentVC is loaded from", ckpt_path)
+    print("[INFO] VC Model is loaded from", ckpt_path)
 
     vocoder = torch.jit.load(vocoder_path).to(device).eval()
     print("[INFO] Vocoder is loaded from", vocoder_path)
