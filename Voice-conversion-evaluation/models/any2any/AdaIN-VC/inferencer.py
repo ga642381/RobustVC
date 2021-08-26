@@ -37,7 +37,7 @@ class Inferencer:
 
     def inference_from_pair(self, pair, source_dir: str, target_dir: str) -> Tensor:
         source_utt = Path(source_dir) / pair["src_utt"]
-        target_utt = Path(target_dir) / pair["tgt_utts"][0]
+        target_utt = Path(target_dir) / pair["tgt_utts"][0]  # ! temp one tgt
 
         # below modified from cyhung-tw AdaIN-VC inference script
         src, src_sr = torchaudio.load(source_utt)

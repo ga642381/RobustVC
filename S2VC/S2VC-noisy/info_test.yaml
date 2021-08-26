@@ -1,0 +1,4 @@
+p238 -> p302:
+  source: ../../VCTK_test_dataset/wav48/p238/p238_060.wav
+  target:
+  - ../../VCTK_test_dataset/wav48/p302/p302_007.wav 
