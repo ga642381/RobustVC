@@ -43,8 +43,13 @@ class Inferencer:
         src, src_sr = torchaudio.load(source_utt)
         tgt, tgt_sr = torchaudio.load(target_utt)
 
-        src = self.wav2mel_(src, src_sr)[None, :].to(self.device)
-        tgt = self.wav2mel_(tgt, tgt_sr)[None, :].to(self.device)
+        src = self.wav2mel_(src, src_sr)
+        tgt = self.wav2mel_(tgt, tgt_sr)
+        if tgt is None or src is None:
+            return None
+
+        src = src[None, :].to(self.device)
+        tgt = tgt[None, :].to(self.device)
 
         cvt = self.model.inference(src, tgt)
 

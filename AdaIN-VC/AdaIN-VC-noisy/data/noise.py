@@ -2,25 +2,32 @@ import torch
 import augment
 import numpy as np
 import random
-import os
-import torchaudio
 from functools import partial
-
-
-def noise_gen(x):
-    return torch.zeros_like(x).uniform_()
 
 
 class WavAug:
     def __init__(
-        self, sample_rate=16000, p_clean=0.5, p_add=1, p_reverb=0.5, p_band=0.5
+        self,
+        sample_rate=16000,
+        p_clean=0.5,
+        p_add=1,
+        p_reverb=0.5,
+        p_band=0.5,
+        mode="train",
     ):
         self.sample_rate = sample_rate
         self.p_clean = p_clean
         self.p_add = p_add
         self.p_reverb = p_reverb
         self.p_band = p_band
-        self.snr_list = [0, 5, 10, 15]
+        self.mode = mode
+        if mode == "train":
+            self.snr_list = [0, 5, 10, 15]
+        elif mode == "test":
+            self.snr_list = [2.5, 7.5, 12.5, 17.5]
+
+    def _noise_gen(self, x):
+        return torch.zeros_like(x).uniform_()
 
     def add_noise(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -36,21 +43,25 @@ class WavAug:
             : (freqHP - freqLP ; if freqHP > freqLp then bandreject)
         """
         wavaug_chain = augment.EffectChain()
-        if random.random() < self.p_clean:
-            # early return clean wav
+
+        # clean (early return clean wav)
+        if random.random() < self.p_clean and self.mode == "train":
             return x
 
+        # additive
         if random.random() < self.p_add:
-            noise_generator = partial(noise_gen, x=x)
+            noise_generator = partial(self._noise_gen, x=x)
             wavaug_chain = wavaug_chain.additive_noise(
                 noise_generator, snr=random.choice(self.snr_list)
             )
 
+        # reverb
         if random.random() < self.p_reverb:
             wavaug_chain = wavaug_chain.reverb(
                 50, 50, np.random.randint(0, 101)
             ).channels(1)
 
+        # band rejection
         if random.random() < self.p_band:
             band_width = random.randint(50, 150)
             freq_LP = random.randint(100, 500)

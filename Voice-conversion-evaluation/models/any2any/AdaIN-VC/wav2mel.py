@@ -4,6 +4,7 @@ import torch
 from torchaudio.sox_effects import apply_effects_tensor
 from torchaudio.transforms import MelSpectrogram
 
+
 class Wav2Mel(torch.nn.Module):
     """Transform audio file into mel spectrogram tensors."""
 

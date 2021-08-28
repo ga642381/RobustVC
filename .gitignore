@@ -1,11 +1,13 @@
 # user defined
 processed*/
 record*/
-vocoder/
+*.pt
+*.ckpt
 sample/
 .vscode/
 *test*/
 output/
+result/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

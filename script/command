@@ -1,3 +1,0 @@
-python copy_test_dataset.py /fortress/dataset/VCTK-Corpus/ ../VCTK_test_dataset
-
-python add_noise.py ../VCTK_test_dataset ../VCTK_test_noisy_dataset 

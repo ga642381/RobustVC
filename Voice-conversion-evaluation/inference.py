@@ -46,6 +46,8 @@ def conversion(inferencer, device, root, metadata, source_dir, target_dir, outpu
     for pair in tqdm(metadata["pairs"]):
         # conv_mel: Tensor at cpu with shape ()
         conv_mel = inferencer.inference_from_pair(pair, source_dir, target_dir)
+        if conv_mel is None:
+            continue
         conv_mel = conv_mel.detach()
 
         prefix = Path(pair["src_utt"]).stem

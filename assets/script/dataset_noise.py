@@ -30,7 +30,7 @@ def main(data_dir, save_dir, out_sample_rate):
     print(f"[INFO] {len(wav_files)} wav files found in {data_dir}")
 
     # add noise
-    wavaug = WavAug(sample_rate=out_sample_rate)
+    wavaug = WavAug(sample_rate=out_sample_rate, mode="test")
     for wav_file in tqdm(wav_files):
         output_path = wav_file.replace(str(data_dir), str(save_dir))
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)

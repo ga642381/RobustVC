@@ -1,7 +1,0 @@
-python inference.py -m test/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/VCTK_test_dataset -t /fortress/vc2021/robust-vc/VCTK_test_dataset -o test_out -r models/any2any/AdaIN-VC
-
-python calculate_objective_metric.py -d ./test_out/AdaIN-VC/VCTK2VCTK/ -r metrics/mean_opinion_score -o test_out_mos
-
-python calculate_objective_metric.py -d ./test_out/AdaIN-VC/VCTK2VCTK/ -r metrics/character_error_rate -o test_out_cer
-
-python calculate_objective_metric.py -d ./test_out/AdaIN-VC/VCTK2VCTK/ -r metrics/speaker_verification -o test_out_eer -t ../VCTK_test_dataset --th metrics/speaker_verification/equal_error_rate/VCTK_eer.yaml
