@@ -108,6 +108,7 @@ def sample_pairs(
 
     metadata["pairs"].sort(key=lambda x: x["src_second"], reverse=True)
 
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
     output_path = (
         Path(output_dir) / f"{source_corpus_name}_to_{target_corpus_name}.json"
     )

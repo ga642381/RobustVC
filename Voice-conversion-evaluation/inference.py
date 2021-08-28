@@ -44,23 +44,27 @@ def conversion(inferencer, device, root, metadata, source_dir, target_dir, outpu
 
     conv_mels = []
     for pair in tqdm(metadata["pairs"]):
-        # conv_mel: Tensor at cpu with shape ()
+        # Sometimes the wav is too noisy, the sox vad will trim the whole utterence.
+        # Then we ignore that sample
         conv_mel = inferencer.inference_from_pair(pair, source_dir, target_dir)
         if conv_mel is None:
-            continue
-        conv_mel = conv_mel.detach()
+            pair["converted"] = "failed"
 
-        prefix = Path(pair["src_utt"]).stem
-        postfix = Path(pair["tgt_utts"][0]).stem
-        file_path = mel_output_dir / f"{prefix}_to_{postfix}.pt"
-        torch.save(conv_mel, file_path)
+        else:
+            # Only for one target utterence, because AdaIN-VC only support one source and one target now
+            prefix = Path(pair["src_utt"]).stem
+            postfix = Path(pair["tgt_utts"][0]).stem
+            file_path = mel_output_dir / f"{prefix}_to_{postfix}.pt"
+            pair["mel_path"] = f"mel_files/{prefix}_to_{postfix}.pt"
+            pair["converted"] = "placeholder"
 
-        pair["mel_path"] = f"mel_files/{prefix}_to_{postfix}.pt"
-        conv_mels.append(conv_mel.to(device))
+            conv_mel = conv_mel.detach()
+            torch.save(conv_mel, file_path)
+            conv_mels.append(conv_mel.to(device))
 
     metadata["pairs"] = metadata.pop("pairs")
-    metadata_output_path = output_dir / "metadata.json"
-    json.dump(metadata, metadata_output_path.open("w"), indent=2)
+    # metadata_output_path = output_dir / "metadata.json"
+    # json.dump(metadata, metadata_output_path.open("w"), indent=2)
 
     return metadata, conv_mels
 
@@ -87,7 +91,7 @@ def main(
 ):
     """Main function"""
 
-    # import Inferencer module
+    # setting up
     inferencer_path = str(Path(root) / "inferencer").replace("/", ".")
     Inferencer = getattr(importlib.import_module(inferencer_path), "Inferencer")
 
@@ -106,6 +110,7 @@ def main(
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # Voice Conversion (Mel-Spectrogram)
     if reload:
         metadata, conv_mels = reload_from_numpy(device, metadata, reload_dir)
     else:
@@ -113,38 +118,39 @@ def main(
             inferencer, device, root, metadata, source_dir, target_dir, output_dir
         )
 
+    # Mel-Spectrogram -> Wavform
+    n_samples = len(conv_mels)
     waveforms = []
     max_memory_use = conv_mels[0].size(0) * batch_size
-
-    # for AdaIN-VC
     with torch.no_grad():
-        pbar = tqdm(total=metadata["n_samples"])
-        # for mel in conv_mels:
-        #     wav = inferencer.spectrogram2waveform([mel.squeeze(0).data.T])
-        #     wav = wav[0].data.cpu().numpy()
-        #     waveforms.append(wav)
-        #     pbar.update(1)
-
+        pbar = tqdm(total=n_samples)
         left = 0
-        while left < metadata["n_samples"]:
+        while left < n_samples:
             batch_size = max_memory_use // conv_mels[left].size(0) - 1
-            right = left + min(batch_size, metadata["n_samples"] - left)
+            right = left + min(batch_size, n_samples - left)
             waveforms.extend(inferencer.spectrogram2waveform(conv_mels[left:right]))
             pbar.update(batch_size)
             left += batch_size
 
         pbar.close()
 
-    for pair, waveform in tqdm(zip(metadata["pairs"], waveforms), total=len(waveforms)):
+    # Save Wavforms
+    success_metadata = list(
+        filter(lambda pair: pair["converted"] != "failed", metadata["pairs"])
+    )
+    assert len(success_metadata) == len(waveforms)
+
+    for pair, waveform in tqdm(zip(success_metadata, waveforms), total=len(waveforms)):
         waveform = waveform.detach().cpu().numpy()
 
         prefix = Path(pair["src_utt"]).stem
-        postfix = Path(pair["tgt_utts"][0]).stem
+        postfix = Path(pair["tgt_utts"][0]).stem  # only for one target
         file_path = output_dir / f"{prefix}_to_{postfix}.wav"
         pair["converted"] = f"{prefix}_to_{postfix}.wav"
 
         sf.write(file_path, waveform, sample_rate)
 
+    # Save metadata
     metadata_output_path = output_dir / "metadata.json"
     json.dump(metadata, metadata_output_path.open("w"), indent=2)
 
