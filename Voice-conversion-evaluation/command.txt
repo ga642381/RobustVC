@@ -1,0 +1,16 @@
+=== choose one ===
+python make_metadata.py VCTK /fortress/vc2021/robust-vc/assets/vctk_test_clean VCTK /fortress/vc2021/robust-vc/assets/vctk_test_clean -n 100 -nt 1 -o ./metadata
+
+python make_metadata.py VCTK /fortress/vc2021/robust-vc/assets/vctk_test_noisy VCTK /fortress/vc2021/robust-vc/assets/vctk_test_noisy -n 100 -nt 1 -o ./metadata
+
+======
+python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_clean -t /fortress/vc2021/robust-vc/assets/vctk_test_clean -o ./result/clean -r models/any2any/AdaIN-VC
+
+python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_noisy -t /fortress/vc2021/robust-vc/assets/vctk_test_noisy -o ./result/noisy -r models/any2any/AdaIN-VC
+
+======
+python calculate_objective_metric.py -d ./test_out/AdaIN-VC/VCTK2VCTK/ -r metrics/mean_opinion_score -o test_out_mos
+
+python calculate_objective_metric.py -d ./test_out/AdaIN-VC/VCTK2VCTK/ -r metrics/character_error_rate -o test_out_cer
+
+python calculate_objective_metric.py -d ./test_out/AdaIN-VC/VCTK2VCTK/ -r metrics/speaker_verification -o test_out_eer -t ../VCTK_test_dataset --th metrics/speaker_verification/equal_error_rate/VCTK_eer.yaml

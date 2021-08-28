@@ -1,9 +1,0 @@
-*.ckpt
-*.pt
-*.pyc
-*.pth
-*.pkl
-.python-version
-results
-*.npz
-*.txt
