@@ -47,14 +47,14 @@ class Wav2Mel(torch.nn.Module):
             dc_db,
         )
 
-    def mel(self, wav_tensor: torch.Tensor) -> torch.Tensor:
+    def mel(self, wav_tensor: torch.Tensor, sample_rate: int) -> torch.Tensor:
         mel_tensor = self.log_melspectrogram(wav_tensor)
         return mel_tensor
 
     def forward(self, wav_tensor: torch.Tensor, sample_rate: int) -> torch.Tensor:
         # 1. sox effect
         wav_tensor = self.sox_effects(wav_tensor, sample_rate)
-        if wav_tensor.numel() == 0:
+        if wav_tensor is None:
             return None
 
         # 2. log mel-spectrogram
@@ -82,6 +82,8 @@ class SoxEffects(torch.nn.Module):
 
     def forward(self, wav_tensor: torch.Tensor, sample_rate: int) -> torch.Tensor:
         wav_tensor, _ = apply_effects_tensor(wav_tensor, sample_rate, self.effects)
+        if wav_tensor.numel() == 0:
+            return None
         return wav_tensor
 
 

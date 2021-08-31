@@ -1,1012 +1,1012 @@
 {
   "source_corpus": "VCTK",
   "source_corpus_speaker_number": 20,
-  "source_random_seed": 748,
+  "source_random_seed": 998,
   "target_corpus": "VCTK",
   "target_corpus_speaker_number": 20,
-  "target_random_seed": 74,
+  "target_random_seed": 169,
   "n_samples": 100,
   "n_target_samples": 1,
   "pairs": [
     {
-      "source_speaker": "p334",
-      "target_speaker": "p238",
-      "src_utt": "wav48/p334/p334_005.wav",
+      "source_speaker": "p238",
+      "target_speaker": "p255",
+      "src_utt": "wav48/p238/p238_018.wav",
       "tgt_utts": [
-        "wav48/p238/p238_339.wav"
+        "wav48/p255/p255_194.wav"
       ],
-      "content": "She can scoop these things into three red bags, and we will go meet her Wednesday at the train station.",
-      "src_second": 6.65859410430839
+      "content": "Aristotle thought that the rainbow was caused by reflection of the sun's rays by the rain.\n",
+      "src_second": 5.928027210884354
     },
     {
-      "source_speaker": "p238",
+      "source_speaker": "p282",
       "target_speaker": "p302",
-      "src_utt": "wav48/p238/p238_293.wav",
+      "src_utt": "wav48/p282/p282_016.wav",
       "tgt_utts": [
-        "wav48/p302/p302_189.wav"
+        "wav48/p302/p302_104.wav"
       ],
-      "content": "She is currently the permanent secretary at the Department of Transport.\n",
-      "src_second": 5.97578231292517
+      "content": "The Norsemen considered the rainbow as a bridge over which the gods passed from earth to their home in the sky. \n",
+      "src_second": 5.524036281179138
     },
     {
       "source_speaker": "p243",
-      "target_speaker": "p283",
-      "src_utt": "wav48/p243/p243_069.wav",
+      "target_speaker": "p343",
+      "src_utt": "wav48/p243/p243_014.wav",
       "tgt_utts": [
-        "wav48/p283/p283_092.wav"
+        "wav48/p343/p343_252.wav"
       ],
-      "content": "I cannot believe that someone would pay so much for works like these.\n",
-      "src_second": 5.717868480725624
-    },
-    {
-      "source_speaker": "p334",
-      "target_speaker": "p238",
-      "src_utt": "wav48/p334/p334_006.wav",
-      "tgt_utts": [
-        "wav48/p238/p238_041.wav"
-      ],
-      "content": "When the sunlight strikes raindrops in the air, they act as a prism and form a rainbow.",
-      "src_second": 5.371972789115646
+      "content": "To the Hebrews it was a token that there would be no more universal floods. \n",
+      "src_second": 5.126394557823129
     },
     {
       "source_speaker": "p302",
+      "target_speaker": "p238",
+      "src_utt": "wav48/p302/p302_016.wav",
+      "tgt_utts": [
+        "wav48/p238/p238_430.wav"
+      ],
+      "content": "The Norsemen considered the rainbow as a bridge over which the gods passed from earth to their home in the sky.",
+      "src_second": 4.943265306122449
+    },
+    {
+      "source_speaker": "p243",
+      "target_speaker": "p334",
+      "src_utt": "wav48/p243/p243_040.wav",
+      "tgt_utts": [
+        "wav48/p334/p334_092.wav"
+      ],
+      "content": "Everyone has to prove a point when they cross that white line.\n",
+      "src_second": 3.92421768707483
+    },
+    {
+      "source_speaker": "p318",
       "target_speaker": "p259",
-      "src_utt": "wav48/p302/p302_063.wav",
+      "src_utt": "wav48/p318/p318_125.wav",
       "tgt_utts": [
-        "wav48/p259/p259_096.wav"
+        "wav48/p259/p259_330.wav"
       ],
-      "content": "The quality of life is difficult for them.",
-      "src_second": 5.20984126984127
-    },
-    {
-      "source_speaker": "p258",
-      "target_speaker": "p246",
-      "src_utt": "wav48/p258/p258_272.wav",
-      "tgt_utts": [
-        "wav48/p246/p246_156.wav"
-      ],
-      "content": "Our dispute is with the company, not the travelling public.\n",
-      "src_second": 5.037460317460318
-    },
-    {
-      "source_speaker": "p238",
-      "target_speaker": "p251",
-      "src_utt": "wav48/p238/p238_135.wav",
-      "tgt_utts": [
-        "wav48/p251/p251_071.wav"
-      ],
-      "content": "No one person or small group could be singled out.\n",
-      "src_second": 4.995147392290249
-    },
-    {
-      "source_speaker": "p259",
-      "target_speaker": "p343",
-      "src_utt": "wav48/p259/p259_017.wav",
-      "tgt_utts": [
-        "wav48/p343/p343_069.wav"
-      ],
-      "content": "Others have tried to explain the phenomenon physically. )\n",
-      "src_second": 4.993832199546485
+      "content": "I was a spectator, that is as far as it goes.",
+      "src_second": 3.8355102040816327
     },
     {
       "source_speaker": "p270",
+      "target_speaker": "p317",
+      "src_utt": "wav48/p270/p270_091.wav",
+      "tgt_utts": [
+        "wav48/p317/p317_027.wav"
+      ],
+      "content": "Previously, they were raised in the European Court of Human Rights.\n",
+      "src_second": 3.7928344671201812
+    },
+    {
+      "source_speaker": "p283",
+      "target_speaker": "p303",
+      "src_utt": "wav48/p283/p283_004.wav",
+      "tgt_utts": [
+        "wav48/p303/p303_082.wav"
+      ],
+      "content": "We also need a small plastic snake and a big toy frog for the kids.  \n",
+      "src_second": 3.7389569160997733
+    },
+    {
+      "source_speaker": "p282",
+      "target_speaker": "p302",
+      "src_utt": "wav48/p282/p282_144.wav",
+      "tgt_utts": [
+        "wav48/p302/p302_114.wav"
+      ],
+      "content": "Alice, the girl, was said by doctors to be in good condition.\n",
+      "src_second": 3.359455782312925
+    },
+    {
+      "source_speaker": "p267",
+      "target_speaker": "p243",
+      "src_utt": "wav48/p267/p267_007.wav",
+      "tgt_utts": [
+        "wav48/p243/p243_055.wav"
+      ],
+      "content": "The rainbow is a division of white light into many beautiful colors. \n",
+      "src_second": 3.2858503401360544
+    },
+    {
+      "source_speaker": "p246",
+      "target_speaker": "p299",
+      "src_utt": "wav48/p246/p246_186.wav",
+      "tgt_utts": [
+        "wav48/p299/p299_020.wav"
+      ],
+      "content": "I think the Commission has been very, very slow to react.\n",
+      "src_second": 3.231700680272109
+    },
+    {
+      "source_speaker": "p252",
       "target_speaker": "p318",
-      "src_utt": "wav48/p270/p270_402.wav",
+      "src_utt": "wav48/p252/p252_270.wav",
       "tgt_utts": [
-        "wav48/p318/p318_010.wav"
+        "wav48/p318/p318_201.wav"
       ],
-      "content": "Saddam is not the only example of evil in our world.\n",
-      "src_second": 4.739546485260771
+      "content": "It is also hoped big name stars could be brought on board.\n",
+      "src_second": 3.2091609977324262
     },
     {
-      "source_speaker": "p251",
+      "source_speaker": "p238",
+      "target_speaker": "p283",
+      "src_utt": "wav48/p238/p238_455.wav",
+      "tgt_utts": [
+        "wav48/p283/p283_047.wav"
+      ],
+      "content": "Stagecoach is seeking a new finance director.\n",
+      "src_second": 3.156689342403628
+    },
+    {
+      "source_speaker": "p283",
+      "target_speaker": "p282",
+      "src_utt": "wav48/p283/p283_102.wav",
+      "tgt_utts": [
+        "wav48/p282/p282_219.wav"
+      ],
+      "content": "The outsourcing deal will take effect in September.\n",
+      "src_second": 3.141451247165533
+    },
+    {
+      "source_speaker": "p267",
+      "target_speaker": "p270",
+      "src_utt": "wav48/p267/p267_127.wav",
+      "tgt_utts": [
+        "wav48/p270/p270_197.wav"
+      ],
+      "content": "Alice, the girl, was said by doctors to be in good condition.\n",
+      "src_second": 2.956326530612245
+    },
+    {
+      "source_speaker": "p318",
+      "target_speaker": "p303",
+      "src_utt": "wav48/p318/p318_049.wav",
+      "tgt_utts": [
+        "wav48/p303/p303_335.wav"
+      ],
+      "content": "He was critically ill in hospital last night.",
+      "src_second": 2.8421315192743766
+    },
+    {
+      "source_speaker": "p259",
+      "target_speaker": "p283",
+      "src_utt": "wav48/p259/p259_032.wav",
+      "tgt_utts": [
+        "wav48/p283/p283_118.wav"
+      ],
+      "content": "The function of the clerk is to provide advice.)\n",
+      "src_second": 2.8290702947845805
+    },
+    {
+      "source_speaker": "p243",
+      "target_speaker": "p251",
+      "src_utt": "wav48/p243/p243_038.wav",
+      "tgt_utts": [
+        "wav48/p251/p251_046.wav"
+      ],
+      "content": "He added that her comments were noted.\n",
+      "src_second": 2.779591836734694
+    },
+    {
+      "source_speaker": "p303",
+      "target_speaker": "p251",
+      "src_utt": "wav48/p303/p303_060.wav",
+      "tgt_utts": [
+        "wav48/p251/p251_266.wav"
+      ],
+      "content": "Gerhard Schroeder was the victor.",
+      "src_second": 2.7174149659863946
+    },
+    {
+      "source_speaker": "p303",
+      "target_speaker": "p282",
+      "src_utt": "wav48/p303/p303_064.wav",
+      "tgt_utts": [
+        "wav48/p282/p282_119.wav"
+      ],
+      "content": "Seven children had lost both parents.",
+      "src_second": 2.59859410430839
+    },
+    {
+      "source_speaker": "p303",
       "target_speaker": "p252",
-      "src_utt": "wav48/p251/p251_121.wav",
+      "src_utt": "wav48/p303/p303_046.wav",
       "tgt_utts": [
-        "wav48/p252/p252_357.wav"
+        "wav48/p252/p252_297.wav"
       ],
-      "content": "We recognise the important role of golf in attracting visitors.\n",
-      "src_second": 4.69687074829932
+      "content": "I did not want any damage to us.",
+      "src_second": 2.56421768707483
     },
     {
-      "source_speaker": "p255",
-      "target_speaker": "p238",
-      "src_utt": "wav48/p255/p255_342.wav",
+      "source_speaker": "p259",
+      "target_speaker": "p270",
+      "src_utt": "wav48/p259/p259_183.wav",
       "tgt_utts": [
-        "wav48/p238/p238_279.wav"
+        "wav48/p270/p270_045.wav"
       ],
-      "content": "A change in that position would require a decision by the council.\n",
-      "src_second": 4.656009070294784
+      "content": "It is vital to clarify their role.)\n",
+      "src_second": 2.5477551020408162
+    },
+    {
+      "source_speaker": "p243",
+      "target_speaker": "p267",
+      "src_utt": "wav48/p243/p243_159.wav",
+      "tgt_utts": [
+        "wav48/p267/p267_035.wav"
+      ],
+      "content": "As our national coach, Brown is done for.\n",
+      "src_second": 2.527981859410431
+    },
+    {
+      "source_speaker": "p303",
+      "target_speaker": "p243",
+      "src_utt": "wav48/p303/p303_294.wav",
+      "tgt_utts": [
+        "wav48/p243/p243_331.wav"
+      ],
+      "content": "The Devil is the creator of weapons.",
+      "src_second": 2.4574149659863944
+    },
+    {
+      "source_speaker": "p243",
+      "target_speaker": "p302",
+      "src_utt": "wav48/p243/p243_217.wav",
+      "tgt_utts": [
+        "wav48/p302/p302_114.wav"
+      ],
+      "content": "I do not see this so much as failure.\n",
+      "src_second": 2.3727891156462584
+    },
+    {
+      "source_speaker": "p252",
+      "target_speaker": "p246",
+      "src_utt": "wav48/p252/p252_184.wav",
+      "tgt_utts": [
+        "wav48/p246/p246_134.wav"
+      ],
+      "content": "It is actually building on the existing business.\n",
+      "src_second": 2.3639455782312924
+    },
+    {
+      "source_speaker": "p318",
+      "target_speaker": "p259",
+      "src_utt": "wav48/p318/p318_119.wav",
+      "tgt_utts": [
+        "wav48/p259/p259_327.wav"
+      ],
+      "content": "O Neill is reputed to have replied.",
+      "src_second": 2.352063492063492
+    },
+    {
+      "source_speaker": "p303",
+      "target_speaker": "p251",
+      "src_utt": "wav48/p303/p303_282.wav",
+      "tgt_utts": [
+        "wav48/p251/p251_077.wav"
+      ],
+      "content": "She had been sexually assaulted.",
+      "src_second": 2.340816326530612
+    },
+    {
+      "source_speaker": "p258",
+      "target_speaker": "p343",
+      "src_utt": "wav48/p258/p258_030.wav",
+      "tgt_utts": [
+        "wav48/p343/p343_042.wav"
+      ],
+      "content": "However, the following year the cancer returned.\n",
+      "src_second": 2.3357823129251702
+    },
+    {
+      "source_speaker": "p246",
+      "target_speaker": "p267",
+      "src_utt": "wav48/p246/p246_316.wav",
+      "tgt_utts": [
+        "wav48/p267/p267_169.wav"
+      ],
+      "content": "The election is total confusion and chaos.\n",
+      "src_second": 2.30875283446712
+    },
+    {
+      "source_speaker": "p238",
+      "target_speaker": "p317",
+      "src_utt": "wav48/p238/p238_307.wav",
+      "tgt_utts": [
+        "wav48/p317/p317_134.wav"
+      ],
+      "content": "Friday night was a pretty good night.\n",
+      "src_second": 2.2992743764172334
+    },
+    {
+      "source_speaker": "p334",
+      "target_speaker": "p255",
+      "src_utt": "wav48/p334/p334_185.wav",
+      "tgt_utts": [
+        "wav48/p255/p255_197.wav"
+      ],
+      "content": "And what was that like, as an experience?",
+      "src_second": 2.2905215419501133
+    },
+    {
+      "source_speaker": "p267",
+      "target_speaker": "p302",
+      "src_utt": "wav48/p267/p267_256.wav",
+      "tgt_utts": [
+        "wav48/p302/p302_232.wav"
+      ],
+      "content": "Now, suddenly, we have this new landscape.\n",
+      "src_second": 2.290294784580499
+    },
+    {
+      "source_speaker": "p267",
+      "target_speaker": "p299",
+      "src_utt": "wav48/p267/p267_115.wav",
+      "tgt_utts": [
+        "wav48/p299/p299_136.wav"
+      ],
+      "content": "What kind of man does that, Mr Dick ?\n",
+      "src_second": 2.2877551020408164
+    },
+    {
+      "source_speaker": "p258",
+      "target_speaker": "p334",
+      "src_utt": "wav48/p258/p258_149.wav",
+      "tgt_utts": [
+        "wav48/p334/p334_256.wav"
+      ],
+      "content": "The weather affected the other two games in Fife.\n",
+      "src_second": 2.2746938775510204
+    },
+    {
+      "source_speaker": "p334",
+      "target_speaker": "p318",
+      "src_utt": "wav48/p334/p334_368.wav",
+      "tgt_utts": [
+        "wav48/p318/p318_373.wav"
+      ],
+      "content": "As a nation, we must become more active.",
+      "src_second": 2.2724716553287982
     },
     {
       "source_speaker": "p302",
-      "target_speaker": "p252",
-      "src_utt": "wav48/p302/p302_149.wav",
+      "target_speaker": "p318",
+      "src_utt": "wav48/p302/p302_193.wav",
       "tgt_utts": [
-        "wav48/p252/p252_050.wav"
+        "wav48/p318/p318_229.wav"
       ],
-      "content": "Well, it's not before time, is it?",
-      "src_second": 4.612789115646258
+      "content": "Scottish fishermen comended the decision.",
+      "src_second": 2.249750566893424
+    },
+    {
+      "source_speaker": "p317",
+      "target_speaker": "p283",
+      "src_utt": "wav48/p317/p317_279.wav",
+      "tgt_utts": [
+        "wav48/p283/p283_254.wav"
+      ],
+      "content": "There's not much money in cycling.",
+      "src_second": 2.2425850340136053
+    },
+    {
+      "source_speaker": "p238",
+      "target_speaker": "p243",
+      "src_utt": "wav48/p238/p238_244.wav",
+      "tgt_utts": [
+        "wav48/p243/p243_347.wav"
+      ],
+      "content": "Mr Blair had done well.\n",
+      "src_second": 2.2196371882086168
+    },
+    {
+      "source_speaker": "p251",
+      "target_speaker": "p258",
+      "src_utt": "wav48/p251/p251_233.wav",
+      "tgt_utts": [
+        "wav48/p258/p258_209.wav"
+      ],
+      "content": "It's a question of creating a future awareness.\n",
+      "src_second": 2.214965986394558
+    },
+    {
+      "source_speaker": "p334",
+      "target_speaker": "p283",
+      "src_utt": "wav48/p334/p334_032.wav",
+      "tgt_utts": [
+        "wav48/p283/p283_450.wav"
+      ],
+      "content": "It can't just be a cynical marketing exercise.",
+      "src_second": 2.195328798185941
+    },
+    {
+      "source_speaker": "p267",
+      "target_speaker": "p255",
+      "src_utt": "wav48/p267/p267_266.wav",
+      "tgt_utts": [
+        "wav48/p255/p255_281.wav"
+      ],
+      "content": "On the contrary they stand to gain.\n",
+      "src_second": 2.173968253968254
+    },
+    {
+      "source_speaker": "p243",
+      "target_speaker": "p258",
+      "src_utt": "wav48/p243/p243_157.wav",
+      "tgt_utts": [
+        "wav48/p258/p258_090.wav"
+      ],
+      "content": "When it happened, he could hardly believe it.\n",
+      "src_second": 2.173015873015873
+    },
+    {
+      "source_speaker": "p299",
+      "target_speaker": "p283",
+      "src_utt": "wav48/p299/p299_094.wav",
+      "tgt_utts": [
+        "wav48/p283/p283_378.wav"
+      ],
+      "content": "He put some colour into Scottish history.",
+      "src_second": 2.1521995464852606
+    },
+    {
+      "source_speaker": "p267",
+      "target_speaker": "p251",
+      "src_utt": "wav48/p267/p267_307.wav",
+      "tgt_utts": [
+        "wav48/p251/p251_329.wav"
+      ],
+      "content": "It is a potential danger.\n",
+      "src_second": 2.127074829931973
+    },
+    {
+      "source_speaker": "p259",
+      "target_speaker": "p283",
+      "src_utt": "wav48/p259/p259_433.wav",
+      "tgt_utts": [
+        "wav48/p283/p283_284.wav"
+      ],
+      "content": "Three years ago he would have been.)\n",
+      "src_second": 2.089160997732426
+    },
+    {
+      "source_speaker": "p302",
+      "target_speaker": "p243",
+      "src_utt": "wav48/p302/p302_291.wav",
+      "tgt_utts": [
+        "wav48/p243/p243_344.wav"
+      ],
+      "content": "He is a success story by any standard.",
+      "src_second": 2.086575963718821
     },
     {
       "source_speaker": "p317",
       "target_speaker": "p258",
-      "src_utt": "wav48/p317/p317_270.wav",
+      "src_utt": "wav48/p317/p317_387.wav",
       "tgt_utts": [
-        "wav48/p258/p258_078.wav"
+        "wav48/p258/p258_256.wav"
       ],
-      "content": "Three further cases were confirmed yesterday in Scotland.",
-      "src_second": 4.610385487528345
+      "content": "I never thought it would take this long.",
+      "src_second": 2.0529705215419503
+    },
+    {
+      "source_speaker": "p258",
+      "target_speaker": "p251",
+      "src_utt": "wav48/p258/p258_077.wav",
+      "tgt_utts": [
+        "wav48/p251/p251_142.wav"
+      ],
+      "content": "Last week, he was taken into hospital.\n",
+      "src_second": 2.0402267573696147
+    },
+    {
+      "source_speaker": "p343",
+      "target_speaker": "p243",
+      "src_utt": "wav48/p343/p343_101.wav",
+      "tgt_utts": [
+        "wav48/p243/p243_200.wav"
+      ],
+      "content": "We can only go up.",
+      "src_second": 2.032607709750567
+    },
+    {
+      "source_speaker": "p302",
+      "target_speaker": "p270",
+      "src_utt": "wav48/p302/p302_139.wav",
+      "tgt_utts": [
+        "wav48/p270/p270_212.wav"
+      ],
+      "content": "The singer's condition was not specified.",
+      "src_second": 2.014331065759637
+    },
+    {
+      "source_speaker": "p299",
+      "target_speaker": "p303",
+      "src_utt": "wav48/p299/p299_147.wav",
+      "tgt_utts": [
+        "wav48/p303/p303_050.wav"
+      ],
+      "content": "That is in the very nature of farming.",
+      "src_second": 2.003265306122449
+    },
+    {
+      "source_speaker": "p252",
+      "target_speaker": "p283",
+      "src_utt": "wav48/p252/p252_036.wav",
+      "tgt_utts": [
+        "wav48/p283/p283_170.wav"
+      ],
+      "content": "We've got a real battle now with Richard.\n",
+      "src_second": 1.9982766439909296
+    },
+    {
+      "source_speaker": "p282",
+      "target_speaker": "p251",
+      "src_utt": "wav48/p282/p282_098.wav",
+      "tgt_utts": [
+        "wav48/p251/p251_301.wav"
+      ],
+      "content": "I wish I had put on a brighter tie.\n",
+      "src_second": 1.9731519274376417
+    },
+    {
+      "source_speaker": "p283",
+      "target_speaker": "p334",
+      "src_utt": "wav48/p283/p283_464.wav",
+      "tgt_utts": [
+        "wav48/p334/p334_405.wav"
+      ],
+      "content": "She has now been registered as disabled.\n",
+      "src_second": 1.9533333333333334
     },
     {
       "source_speaker": "p252",
       "target_speaker": "p238",
-      "src_utt": "wav48/p252/p252_312.wav",
+      "src_utt": "wav48/p252/p252_144.wav",
       "tgt_utts": [
-        "wav48/p238/p238_392.wav"
+        "wav48/p238/p238_045.wav"
       ],
-      "content": "He had served his time.\n",
-      "src_second": 4.4812698412698415
+      "content": "I'd always wanted to act.\n",
+      "src_second": 1.9397278911564626
+    },
+    {
+      "source_speaker": "p334",
+      "target_speaker": "p317",
+      "src_utt": "wav48/p334/p334_335.wav",
+      "tgt_utts": [
+        "wav48/p317/p317_152.wav"
+      ],
+      "content": "They've not let anyone into the loop.",
+      "src_second": 1.9234013605442177
+    },
+    {
+      "source_speaker": "p243",
+      "target_speaker": "p283",
+      "src_utt": "wav48/p243/p243_064.wav",
+      "tgt_utts": [
+        "wav48/p283/p283_082.wav"
+      ],
+      "content": "It also has a good labour supply.\n",
+      "src_second": 1.9151020408163266
+    },
+    {
+      "source_speaker": "p283",
+      "target_speaker": "p259",
+      "src_utt": "wav48/p283/p283_265.wav",
+      "tgt_utts": [
+        "wav48/p259/p259_322.wav"
+      ],
+      "content": "It depends on Labour, not on us.\n",
+      "src_second": 1.9119727891156462
+    },
+    {
+      "source_speaker": "p283",
+      "target_speaker": "p343",
+      "src_utt": "wav48/p283/p283_054.wav",
+      "tgt_utts": [
+        "wav48/p343/p343_207.wav"
+      ],
+      "content": "I had come back from London.\n",
+      "src_second": 1.87578231292517
+    },
+    {
+      "source_speaker": "p312",
+      "target_speaker": "p270",
+      "src_utt": "wav48/p312/p312_357.wav",
+      "tgt_utts": [
+        "wav48/p270/p270_101.wav"
+      ],
+      "content": "It's better to be happy.",
+      "src_second": 1.8676643990929704
+    },
+    {
+      "source_speaker": "p270",
+      "target_speaker": "p318",
+      "src_utt": "wav48/p270/p270_183.wav",
+      "tgt_utts": [
+        "wav48/p318/p318_042.wav"
+      ],
+      "content": "Playing in Europe is the benchmark.\n",
+      "src_second": 1.8514739229024944
     },
     {
       "source_speaker": "p251",
-      "target_speaker": "p246",
-      "src_utt": "wav48/p251/p251_150.wav",
+      "target_speaker": "p318",
+      "src_utt": "wav48/p251/p251_307.wav",
       "tgt_utts": [
-        "wav48/p246/p246_312.wav"
+        "wav48/p318/p318_200.wav"
       ],
-      "content": "The petition was formally presented at Downing Street yesterday.\n",
-      "src_second": 4.48108843537415
+      "content": "This is a national crisis.\n",
+      "src_second": 1.8387301587301588
     },
     {
-      "source_speaker": "p238",
+      "source_speaker": "p246",
+      "target_speaker": "p270",
+      "src_utt": "wav48/p246/p246_209.wav",
+      "tgt_utts": [
+        "wav48/p270/p270_248.wav"
+      ],
+      "content": "In each case they were a goal down.\n",
+      "src_second": 1.816825396825397
+    },
+    {
+      "source_speaker": "p283",
+      "target_speaker": "p318",
+      "src_utt": "wav48/p283/p283_312.wav",
+      "tgt_utts": [
+        "wav48/p318/p318_180.wav"
+      ],
+      "content": "It further expressed his defiance.\n",
+      "src_second": 1.7984126984126985
+    },
+    {
+      "source_speaker": "p283",
+      "target_speaker": "p318",
+      "src_utt": "wav48/p283/p283_145.wav",
+      "tgt_utts": [
+        "wav48/p318/p318_320.wav"
+      ],
+      "content": "We are entirely happy with Russell.\n",
+      "src_second": 1.7638548752834466
+    },
+    {
+      "source_speaker": "p317",
+      "target_speaker": "p243",
+      "src_utt": "wav48/p317/p317_253.wav",
+      "tgt_utts": [
+        "wav48/p243/p243_027.wav"
+      ],
+      "content": "They just made me feel dizzy.",
+      "src_second": 1.7021315192743764
+    },
+    {
+      "source_speaker": "p259",
+      "target_speaker": "p299",
+      "src_utt": "wav48/p259/p259_181.wav",
+      "tgt_utts": [
+        "wav48/p299/p299_204.wav"
+      ],
+      "content": "Phase one was a shambles.)\n",
+      "src_second": 1.6840816326530612
+    },
+    {
+      "source_speaker": "p246",
+      "target_speaker": "p243",
+      "src_utt": "wav48/p246/p246_146.wav",
+      "tgt_utts": [
+        "wav48/p243/p243_271.wav"
+      ],
+      "content": "It is not just about pay.\n",
+      "src_second": 1.6741043083900227
+    },
+    {
+      "source_speaker": "p252",
+      "target_speaker": "p318",
+      "src_utt": "wav48/p252/p252_363.wav",
+      "tgt_utts": [
+        "wav48/p318/p318_204.wav"
+      ],
+      "content": "That seems highly unlikely.\n",
+      "src_second": 1.6170975056689343
+    },
+    {
+      "source_speaker": "p282",
+      "target_speaker": "p246",
+      "src_utt": "wav48/p282/p282_169.wav",
+      "tgt_utts": [
+        "wav48/p246/p246_250.wav"
+      ],
+      "content": "We have a budget in March.\n",
+      "src_second": 1.6087528344671203
+    },
+    {
+      "source_speaker": "p302",
+      "target_speaker": "p282",
+      "src_utt": "wav48/p302/p302_240.wav",
+      "tgt_utts": [
+        "wav48/p282/p282_254.wav"
+      ],
+      "content": "I couldn't make out what was going on.",
+      "src_second": 1.6077551020408163
+    },
+    {
+      "source_speaker": "p334",
+      "target_speaker": "p312",
+      "src_utt": "wav48/p334/p334_405.wav",
+      "tgt_utts": [
+        "wav48/p312/p312_117.wav"
+      ],
+      "content": "It's the same as Glasgow.",
+      "src_second": 1.5984580498866212
+    },
+    {
+      "source_speaker": "p283",
+      "target_speaker": "p303",
+      "src_utt": "wav48/p283/p283_362.wav",
+      "tgt_utts": [
+        "wav48/p303/p303_290.wav"
+      ],
+      "content": "In the old days, it was easy.\n",
+      "src_second": 1.5707936507936509
+    },
+    {
+      "source_speaker": "p312",
+      "target_speaker": "p317",
+      "src_utt": "wav48/p312/p312_343.wav",
+      "tgt_utts": [
+        "wav48/p317/p317_364.wav"
+      ],
+      "content": "This is perfectly legal.",
+      "src_second": 1.5470294784580498
+    },
+    {
+      "source_speaker": "p317",
+      "target_speaker": "p303",
+      "src_utt": "wav48/p317/p317_289.wav",
+      "tgt_utts": [
+        "wav48/p303/p303_206.wav"
+      ],
+      "content": "It's so creative and different.",
+      "src_second": 1.5397732426303854
+    },
+    {
+      "source_speaker": "p267",
+      "target_speaker": "p255",
+      "src_utt": "wav48/p267/p267_293.wav",
+      "tgt_utts": [
+        "wav48/p255/p255_267.wav"
+      ],
+      "content": "We have a plan in place.\n",
+      "src_second": 1.530204081632653
+    },
+    {
+      "source_speaker": "p302",
+      "target_speaker": "p243",
+      "src_utt": "wav48/p302/p302_200.wav",
+      "tgt_utts": [
+        "wav48/p243/p243_158.wav"
+      ],
+      "content": "They had not been handcuffed.",
+      "src_second": 1.5063492063492063
+    },
+    {
+      "source_speaker": "p318",
+      "target_speaker": "p282",
+      "src_utt": "wav48/p318/p318_195.wav",
+      "tgt_utts": [
+        "wav48/p282/p282_330.wav"
+      ],
+      "content": "They believed it worked.",
+      "src_second": 1.4814512471655328
+    },
+    {
+      "source_speaker": "p243",
+      "target_speaker": "p312",
+      "src_utt": "wav48/p243/p243_386.wav",
+      "tgt_utts": [
+        "wav48/p312/p312_398.wav"
+      ],
+      "content": "What kind of man does that, Mr Dick ?\n",
+      "src_second": 1.480907029478458
+    },
+    {
+      "source_speaker": "p267",
+      "target_speaker": "p255",
+      "src_utt": "wav48/p267/p267_345.wav",
+      "tgt_utts": [
+        "wav48/p255/p255_264.wav"
+      ],
+      "content": "They were the acts of men.\n",
+      "src_second": 1.4528344671201814
+    },
+    {
+      "source_speaker": "p259",
+      "target_speaker": "p282",
+      "src_utt": "wav48/p259/p259_461.wav",
+      "tgt_utts": [
+        "wav48/p282/p282_225.wav"
+      ],
+      "content": "It certainly appeared that way.)\n",
+      "src_second": 1.43156462585034
+    },
+    {
+      "source_speaker": "p259",
+      "target_speaker": "p299",
+      "src_utt": "wav48/p259/p259_407.wav",
+      "tgt_utts": [
+        "wav48/p299/p299_042.wav"
+      ],
+      "content": "We will win the argument.)\n",
+      "src_second": 1.404716553287982
+    },
+    {
+      "source_speaker": "p334",
+      "target_speaker": "p259",
+      "src_utt": "wav48/p334/p334_254.wav",
+      "tgt_utts": [
+        "wav48/p259/p259_046.wav"
+      ],
+      "content": "Check that he is dead.",
+      "src_second": 1.3969614512471655
+    },
+    {
+      "source_speaker": "p283",
+      "target_speaker": "p334",
+      "src_utt": "wav48/p283/p283_030.wav",
+      "tgt_utts": [
+        "wav48/p334/p334_285.wav"
+      ],
+      "content": "And we have a singer.\n",
+      "src_second": 1.3710657596371882
+    },
+    {
+      "source_speaker": "p283",
+      "target_speaker": "p255",
+      "src_utt": "wav48/p283/p283_310.wav",
+      "tgt_utts": [
+        "wav48/p255/p255_338.wav"
+      ],
+      "content": "My whole life has changed.\n",
+      "src_second": 1.3570975056689343
+    },
+    {
+      "source_speaker": "p312",
+      "target_speaker": "p283",
+      "src_utt": "wav48/p312/p312_274.wav",
+      "tgt_utts": [
+        "wav48/p283/p283_119.wav"
+      ],
+      "content": "It was a new ball game.",
+      "src_second": 1.32
+    },
+    {
+      "source_speaker": "p251",
       "target_speaker": "p258",
-      "src_utt": "wav48/p238/p238_139.wav",
+      "src_utt": "wav48/p251/p251_294.wav",
       "tgt_utts": [
         "wav48/p258/p258_238.wav"
       ],
-      "content": "Brown also believes in Walker's innocence.\n",
-      "src_second": 4.480725623582766
-    },
-    {
-      "source_speaker": "p303",
-      "target_speaker": "p299",
-      "src_utt": "wav48/p303/p303_036.wav",
-      "tgt_utts": [
-        "wav48/p299/p299_006.wav"
-      ],
-      "content": "Nor does it have a stock of medicines.",
-      "src_second": 4.438367346938776
+      "content": "Things can change.\n",
+      "src_second": 1.2941496598639455
     },
     {
       "source_speaker": "p283",
-      "target_speaker": "p238",
-      "src_utt": "wav48/p283/p283_317.wav",
+      "target_speaker": "p267",
+      "src_utt": "wav48/p283/p283_457.wav",
       "tgt_utts": [
-        "wav48/p238/p238_329.wav"
+        "wav48/p267/p267_417.wav"
       ],
-      "content": "It was not hard to feel some sympathy for Baxter yesterday.\n",
-      "src_second": 4.310884353741496
-    },
-    {
-      "source_speaker": "p246",
-      "target_speaker": "p302",
-      "src_utt": "wav48/p246/p246_288.wav",
-      "tgt_utts": [
-        "wav48/p302/p302_037.wav"
-      ],
-      "content": "This time, for Rangers, it is certainly the latter.\n",
-      "src_second": 4.2293424036281175
-    },
-    {
-      "source_speaker": "p258",
-      "target_speaker": "p243",
-      "src_utt": "wav48/p258/p258_193.wav",
-      "tgt_utts": [
-        "wav48/p243/p243_149.wav"
-      ],
-      "content": "The modern approach will also be reflected in the terms of address.\n",
-      "src_second": 4.2260770975056685
-    },
-    {
-      "source_speaker": "p302",
-      "target_speaker": "p259",
-      "src_utt": "wav48/p302/p302_101.wav",
-      "tgt_utts": [
-        "wav48/p259/p259_110.wav"
-      ],
-      "content": "Because of this, he feels the hearing had been unfair.",
-      "src_second": 4.225079365079365
-    },
-    {
-      "source_speaker": "p318",
-      "target_speaker": "p282",
-      "src_utt": "wav48/p318/p318_329.wav",
-      "tgt_utts": [
-        "wav48/p282/p282_270.wav"
-      ],
-      "content": "This is the logic of punishment assaults.",
-      "src_second": 4.1414058956916096
-    },
-    {
-      "source_speaker": "p334",
-      "target_speaker": "p312",
-      "src_utt": "wav48/p334/p334_350.wav",
-      "tgt_utts": [
-        "wav48/p312/p312_394.wav"
-      ],
-      "content": "This, too, could provoke a risky business.",
-      "src_second": 4.140272108843537
-    },
-    {
-      "source_speaker": "p238",
-      "target_speaker": "p343",
-      "src_utt": "wav48/p238/p238_353.wav",
-      "tgt_utts": [
-        "wav48/p343/p343_261.wav"
-      ],
-      "content": "This measure is not adjusted for seasonal factors.\n",
-      "src_second": 4.05437641723356
-    },
-    {
-      "source_speaker": "p258",
-      "target_speaker": "p334",
-      "src_utt": "wav48/p258/p258_250.wav",
-      "tgt_utts": [
-        "wav48/p334/p334_349.wav"
-      ],
-      "content": "We decided we would go for a specialist inside centre.\n",
-      "src_second": 4.0154648526077095
-    },
-    {
-      "source_speaker": "p318",
-      "target_speaker": "p343",
-      "src_utt": "wav48/p318/p318_261.wav",
-      "tgt_utts": [
-        "wav48/p343/p343_345.wav"
-      ],
-      "content": "He was in contention almost every week.",
-      "src_second": 4.014648526077098
-    },
-    {
-      "source_speaker": "p299",
-      "target_speaker": "p258",
-      "src_utt": "wav48/p299/p299_002.wav",
-      "tgt_utts": [
-        "wav48/p258/p258_253.wav"
-      ],
-      "content": "Ask her to bring these things with her from the store.",
-      "src_second": 4.0121541950113375
-    },
-    {
-      "source_speaker": "p252",
-      "target_speaker": "p318",
-      "src_utt": "wav48/p252/p252_236.wav",
-      "tgt_utts": [
-        "wav48/p318/p318_259.wav"
-      ],
-      "content": "There is a good reason for this.\n",
-      "src_second": 3.972154195011338
-    },
-    {
-      "source_speaker": "p251",
-      "target_speaker": "p238",
-      "src_utt": "wav48/p251/p251_208.wav",
-      "tgt_utts": [
-        "wav48/p238/p238_083.wav"
-      ],
-      "content": "We see the rapid reaction force as the way ahead.\n",
-      "src_second": 3.8443537414965987
-    },
-    {
-      "source_speaker": "p243",
-      "target_speaker": "p238",
-      "src_utt": "wav48/p243/p243_071.wav",
-      "tgt_utts": [
-        "wav48/p238/p238_007.wav"
-      ],
-      "content": "It turned me against the whole system.\n",
-      "src_second": 3.8435827664399094
-    },
-    {
-      "source_speaker": "p302",
-      "target_speaker": "p283",
-      "src_utt": "wav48/p302/p302_108.wav",
-      "tgt_utts": [
-        "wav48/p283/p283_146.wav"
-      ],
-      "content": "Two and a half million people have died.",
-      "src_second": 3.8434920634920635
-    },
-    {
-      "source_speaker": "p318",
-      "target_speaker": "p303",
-      "src_utt": "wav48/p318/p318_300.wav",
-      "tgt_utts": [
-        "wav48/p303/p303_185.wav"
-      ],
-      "content": "So what's the shape, and what's the detail?",
-      "src_second": 3.8412698412698414
-    },
-    {
-      "source_speaker": "p317",
-      "target_speaker": "p238",
-      "src_utt": "wav48/p317/p317_414.wav",
-      "tgt_utts": [
-        "wav48/p238/p238_240.wav"
-      ],
-      "content": "Now we see the impact of global politics.",
-      "src_second": 3.8016326530612243
-    },
-    {
-      "source_speaker": "p255",
-      "target_speaker": "p299",
-      "src_utt": "wav48/p255/p255_368.wav",
-      "tgt_utts": [
-        "wav48/p299/p299_231.wav"
-      ],
-      "content": "He put some colour into Scottish history.\n",
-      "src_second": 3.800498866213152
-    },
-    {
-      "source_speaker": "p251",
-      "target_speaker": "p299",
-      "src_utt": "wav48/p251/p251_347.wav",
-      "tgt_utts": [
-        "wav48/p299/p299_207.wav"
-      ],
-      "content": "The team for the first game could be this one.\n",
-      "src_second": 3.799591836734694
-    },
-    {
-      "source_speaker": "p282",
-      "target_speaker": "p238",
-      "src_utt": "wav48/p282/p282_310.wav",
-      "tgt_utts": [
-        "wav48/p238/p238_275.wav"
-      ],
-      "content": "We have got to get the points from this one.\n",
-      "src_second": 3.759637188208617
-    },
-    {
-      "source_speaker": "p318",
-      "target_speaker": "p252",
-      "src_utt": "wav48/p318/p318_354.wav",
-      "tgt_utts": [
-        "wav48/p252/p252_381.wav"
-      ],
-      "content": "Overall, it was a promising day for the Scots.",
-      "src_second": 3.716780045351474
-    },
-    {
-      "source_speaker": "p312",
-      "target_speaker": "p334",
-      "src_utt": "wav48/p312/p312_238.wav",
-      "tgt_utts": [
-        "wav48/p334/p334_156.wav"
-      ],
-      "content": "This is a major step forward for carers.",
-      "src_second": 3.7141496598639456
-    },
-    {
-      "source_speaker": "p270",
-      "target_speaker": "p312",
-      "src_utt": "wav48/p270/p270_045.wav",
-      "tgt_utts": [
-        "wav48/p312/p312_237.wav"
-      ],
-      "content": "That was the theory, anyway.\n",
-      "src_second": 3.6701133786848072
-    },
-    {
-      "source_speaker": "p303",
-      "target_speaker": "p302",
-      "src_utt": "wav48/p303/p303_159.wav",
-      "tgt_utts": [
-        "wav48/p302/p302_202.wav"
-      ],
-      "content": "The inquiry had been going on for months.",
-      "src_second": 3.6319274376417234
-    },
-    {
-      "source_speaker": "p255",
-      "target_speaker": "p299",
-      "src_utt": "wav48/p255/p255_346.wav",
-      "tgt_utts": [
-        "wav48/p299/p299_192.wav"
-      ],
-      "content": "I was pleased to be back on the podium in Brazil.\n",
-      "src_second": 3.630612244897959
-    },
-    {
-      "source_speaker": "p243",
-      "target_speaker": "p246",
-      "src_utt": "wav48/p243/p243_129.wav",
-      "tgt_utts": [
-        "wav48/p246/p246_257.wav"
-      ],
-      "content": "It's so nice to see the reaction on their faces.\n",
-      "src_second": 3.6275283446712017
-    },
-    {
-      "source_speaker": "p270",
-      "target_speaker": "p302",
-      "src_utt": "wav48/p270/p270_448.wav",
-      "tgt_utts": [
-        "wav48/p302/p302_297.wav"
-      ],
-      "content": "No further details of expansion plans were given.\n",
-      "src_second": 3.627437641723356
-    },
-    {
-      "source_speaker": "p312",
-      "target_speaker": "p302",
-      "src_utt": "wav48/p312/p312_168.wav",
-      "tgt_utts": [
-        "wav48/p302/p302_026.wav"
-      ],
-      "content": "What's it for, after all?",
-      "src_second": 3.5867573696145123
-    },
-    {
-      "source_speaker": "p317",
-      "target_speaker": "p246",
-      "src_utt": "wav48/p317/p317_350.wav",
-      "tgt_utts": [
-        "wav48/p246/p246_249.wav"
-      ],
-      "content": "This comes down to a problem of arrogance.",
-      "src_second": 3.585986394557823
+      "content": "I'd never run for them.\n",
+      "src_second": 1.2771428571428571
     },
     {
       "source_speaker": "p259",
-      "target_speaker": "p252",
-      "src_utt": "wav48/p259/p259_294.wav",
+      "target_speaker": "p251",
+      "src_utt": "wav48/p259/p259_144.wav",
       "tgt_utts": [
-        "wav48/p252/p252_273.wav"
+        "wav48/p251/p251_169.wav"
       ],
-      "content": "It is a mark of respect from the inmates.)\n",
-      "src_second": 3.5453968253968253
-    },
-    {
-      "source_speaker": "p334",
-      "target_speaker": "p258",
-      "src_utt": "wav48/p334/p334_071.wav",
-      "tgt_utts": [
-        "wav48/p258/p258_268.wav"
-      ],
-      "content": "But there are problems, such as retraining new staff.",
-      "src_second": 3.5040362811791383
-    },
-    {
-      "source_speaker": "p267",
-      "target_speaker": "p317",
-      "src_utt": "wav48/p267/p267_056.wav",
-      "tgt_utts": [
-        "wav48/p317/p317_385.wav"
-      ],
-      "content": "He becomes the new Minister for Sport and Culture.\n",
-      "src_second": 3.5040362811791383
-    },
-    {
-      "source_speaker": "p267",
-      "target_speaker": "p302",
-      "src_utt": "wav48/p267/p267_070.wav",
-      "tgt_utts": [
-        "wav48/p302/p302_138.wav"
-      ],
-      "content": "They do not work for Glasgow City Council.\n",
-      "src_second": 3.4588208616780047
-    },
-    {
-      "source_speaker": "p299",
-      "target_speaker": "p255",
-      "src_utt": "wav48/p299/p299_178.wav",
-      "tgt_utts": [
-        "wav48/p255/p255_152.wav"
-      ],
-      "content": "He admitted there were two aspects of fear.",
-      "src_second": 3.4570975056689344
-    },
-    {
-      "source_speaker": "p318",
-      "target_speaker": "p317",
-      "src_utt": "wav48/p318/p318_271.wav",
-      "tgt_utts": [
-        "wav48/p317/p317_398.wav"
-      ],
-      "content": "I expect a rapid response.",
-      "src_second": 3.3760090702947845
-    },
-    {
-      "source_speaker": "p302",
-      "target_speaker": "p259",
-      "src_utt": "wav48/p302/p302_114.wav",
-      "tgt_utts": [
-        "wav48/p259/p259_324.wav"
-      ],
-      "content": "It is time for a more honest approach.",
-      "src_second": 3.374285714285714
-    },
-    {
-      "source_speaker": "p243",
-      "target_speaker": "p343",
-      "src_utt": "wav48/p243/p243_391.wav",
-      "tgt_utts": [
-        "wav48/p343/p343_182.wav"
-      ],
-      "content": "My tax affairs have been totally open.\n",
-      "src_second": 3.2895238095238097
-    },
-    {
-      "source_speaker": "p270",
-      "target_speaker": "p259",
-      "src_utt": "wav48/p270/p270_117.wav",
-      "tgt_utts": [
-        "wav48/p259/p259_272.wav"
-      ],
-      "content": "Figures are not relevant to the strategy.\n",
-      "src_second": 3.2858956916099773
-    },
-    {
-      "source_speaker": "p282",
-      "target_speaker": "p302",
-      "src_utt": "wav48/p282/p282_160.wav",
-      "tgt_utts": [
-        "wav48/p302/p302_275.wav"
-      ],
-      "content": "Life becomes a song.\n",
-      "src_second": 3.2857142857142856
-    },
-    {
-      "source_speaker": "p267",
-      "target_speaker": "p343",
-      "src_utt": "wav48/p267/p267_128.wav",
-      "tgt_utts": [
-        "wav48/p343/p343_094.wav"
-      ],
-      "content": "They scored with a penalty and a breakaway.\n",
-      "src_second": 3.2459410430839
-    },
-    {
-      "source_speaker": "p299",
-      "target_speaker": "p283",
-      "src_utt": "wav48/p299/p299_356.wav",
-      "tgt_utts": [
-        "wav48/p283/p283_001.wav"
-      ],
-      "content": "But my heart is in athletics.",
-      "src_second": 3.2457596371882085
-    },
-    {
-      "source_speaker": "p238",
-      "target_speaker": "p282",
-      "src_utt": "wav48/p238/p238_085.wav",
-      "tgt_utts": [
-        "wav48/p282/p282_327.wav"
-      ],
-      "content": "It is somewhere to be.\n",
-      "src_second": 3.2456689342403626
-    },
-    {
-      "source_speaker": "p238",
-      "target_speaker": "p283",
-      "src_utt": "wav48/p238/p238_281.wav",
-      "tgt_utts": [
-        "wav48/p283/p283_414.wav"
-      ],
-      "content": "First, the programme was unbalanced.\n",
-      "src_second": 3.162312925170068
-    },
-    {
-      "source_speaker": "p318",
-      "target_speaker": "p246",
-      "src_utt": "wav48/p318/p318_113.wav",
-      "tgt_utts": [
-        "wav48/p246/p246_290.wav"
-      ],
-      "content": "We played so well at times.",
-      "src_second": 3.161814058956916
-    },
-    {
-      "source_speaker": "p334",
-      "target_speaker": "p258",
-      "src_utt": "wav48/p334/p334_327.wav",
-      "tgt_utts": [
-        "wav48/p258/p258_235.wav"
-      ],
-      "content": "This is a dreadful day for Iona.",
-      "src_second": 3.1585034013605444
-    },
-    {
-      "source_speaker": "p238",
-      "target_speaker": "p270",
-      "src_utt": "wav48/p238/p238_179.wav",
-      "tgt_utts": [
-        "wav48/p270/p270_010.wav"
-      ],
-      "content": "You can spend money on housing.\n",
-      "src_second": 3.1585034013605444
-    },
-    {
-      "source_speaker": "p258",
-      "target_speaker": "p303",
-      "src_utt": "wav48/p258/p258_136.wav",
-      "tgt_utts": [
-        "wav48/p303/p303_061.wav"
-      ],
-      "content": "He sees a difference in the style of the two teams.\n",
-      "src_second": 3.158004535147392
+      "content": "Was it the wife ?)\n",
+      "src_second": 1.263219954648526
     },
     {
       "source_speaker": "p299",
       "target_speaker": "p251",
-      "src_utt": "wav48/p299/p299_326.wav",
-      "tgt_utts": [
-        "wav48/p251/p251_020.wav"
-      ],
-      "content": "Lambert will be playing against Belgium.",
-      "src_second": 3.1579138321995464
-    },
-    {
-      "source_speaker": "p252",
-      "target_speaker": "p283",
-      "src_utt": "wav48/p252/p252_247.wav",
-      "tgt_utts": [
-        "wav48/p283/p283_273.wav"
-      ],
-      "content": "It was a great evening.\n",
-      "src_second": 3.1161904761904764
-    },
-    {
-      "source_speaker": "p255",
-      "target_speaker": "p343",
-      "src_utt": "wav48/p255/p255_182.wav",
-      "tgt_utts": [
-        "wav48/p343/p343_180.wav"
-      ],
-      "content": "We wanted it left for a wee while.\n",
-      "src_second": 3.073061224489796
-    },
-    {
-      "source_speaker": "p246",
-      "target_speaker": "p255",
-      "src_utt": "wav48/p246/p246_060.wav",
-      "tgt_utts": [
-        "wav48/p255/p255_259.wav"
-      ],
-      "content": "Scotland had great assets.\n",
-      "src_second": 3.0332426303854874
-    },
-    {
-      "source_speaker": "p303",
-      "target_speaker": "p343",
-      "src_utt": "wav48/p303/p303_207.wav",
-      "tgt_utts": [
-        "wav48/p343/p343_184.wav"
-      ],
-      "content": "The line-up is a tasty one.",
-      "src_second": 3.032199546485261
-    },
-    {
-      "source_speaker": "p283",
-      "target_speaker": "p259",
-      "src_utt": "wav48/p283/p283_394.wav",
-      "tgt_utts": [
-        "wav48/p259/p259_286.wav"
-      ],
-      "content": "As, indeed, they would be.\n",
-      "src_second": 3.0303401360544218
-    },
-    {
-      "source_speaker": "p299",
-      "target_speaker": "p334",
-      "src_utt": "wav48/p299/p299_384.wav",
-      "tgt_utts": [
-        "wav48/p334/p334_048.wav"
-      ],
-      "content": "There is a lot of anger.",
-      "src_second": 2.991156462585034
-    },
-    {
-      "source_speaker": "p259",
-      "target_speaker": "p283",
-      "src_utt": "wav48/p259/p259_473.wav",
-      "tgt_utts": [
-        "wav48/p283/p283_412.wav"
-      ],
-      "content": "I'm very passionate about my country.)\n",
-      "src_second": 2.9882993197278913
-    },
-    {
-      "source_speaker": "p317",
-      "target_speaker": "p255",
-      "src_utt": "wav48/p317/p317_367.wav",
-      "tgt_utts": [
-        "wav48/p255/p255_163.wav"
-      ],
-      "content": "That meant the search was unlawful.",
-      "src_second": 2.9880725623582767
-    },
-    {
-      "source_speaker": "p270",
-      "target_speaker": "p317",
-      "src_utt": "wav48/p270/p270_361.wav",
-      "tgt_utts": [
-        "wav48/p317/p317_279.wav"
-      ],
-      "content": "We have very limited capacity.\n",
-      "src_second": 2.947755102040816
-    },
-    {
-      "source_speaker": "p299",
-      "target_speaker": "p252",
-      "src_utt": "wav48/p299/p299_185.wav",
-      "tgt_utts": [
-        "wav48/p252/p252_267.wav"
-      ],
-      "content": "It was that bad, that low.",
-      "src_second": 2.947755102040816
-    },
-    {
-      "source_speaker": "p312",
-      "target_speaker": "p259",
-      "src_utt": "wav48/p312/p312_407.wav",
-      "tgt_utts": [
-        "wav48/p259/p259_425.wav"
-      ],
-      "content": "There is no easy answer.",
-      "src_second": 2.776190476190476
-    },
-    {
-      "source_speaker": "p238",
-      "target_speaker": "p259",
-      "src_utt": "wav48/p238/p238_061.wav",
-      "tgt_utts": [
-        "wav48/p259/p259_385.wav"
-      ],
-      "content": "We work for the athlete.\n",
-      "src_second": 2.7756462585034014
-    },
-    {
-      "source_speaker": "p283",
-      "target_speaker": "p255",
-      "src_utt": "wav48/p283/p283_170.wav",
-      "tgt_utts": [
-        "wav48/p255/p255_123.wav"
-      ],
-      "content": "Three hours later, the man was free.\n",
-      "src_second": 2.7354195011337867
-    },
-    {
-      "source_speaker": "p334",
-      "target_speaker": "p299",
-      "src_utt": "wav48/p334/p334_184.wav",
-      "tgt_utts": [
-        "wav48/p299/p299_094.wav"
-      ],
-      "content": "Then came the collision with Sergio.",
-      "src_second": 2.731201814058957
-    },
-    {
-      "source_speaker": "p312",
-      "target_speaker": "p282",
-      "src_utt": "wav48/p312/p312_230.wav",
-      "tgt_utts": [
-        "wav48/p282/p282_340.wav"
-      ],
-      "content": "He was replaced by John Spencer.",
-      "src_second": 2.6467573696145124
-    },
-    {
-      "source_speaker": "p283",
-      "target_speaker": "p312",
-      "src_utt": "wav48/p283/p283_142.wav",
-      "tgt_utts": [
-        "wav48/p312/p312_299.wav"
-      ],
-      "content": "Last night, the row continued.\n",
-      "src_second": 2.6463038548752835
-    },
-    {
-      "source_speaker": "p259",
-      "target_speaker": "p302",
-      "src_utt": "wav48/p259/p259_235.wav",
-      "tgt_utts": [
-        "wav48/p302/p302_110.wav"
-      ],
-      "content": "It had all been arranged.)\n",
-      "src_second": 2.60453514739229
-    },
-    {
-      "source_speaker": "p267",
-      "target_speaker": "p238",
-      "src_utt": "wav48/p267/p267_371.wav",
-      "tgt_utts": [
-        "wav48/p238/p238_396.wav"
-      ],
-      "content": "to have products for their needs.\n",
-      "src_second": 2.6039002267573697
-    },
-    {
-      "source_speaker": "p343",
-      "target_speaker": "p334",
-      "src_utt": "wav48/p343/p343_328.wav",
-      "tgt_utts": [
-        "wav48/p334/p334_321.wav"
-      ],
-      "content": "We must learn to finish.",
-      "src_second": 2.6031292517006803
-    },
-    {
-      "source_speaker": "p270",
-      "target_speaker": "p318",
-      "src_utt": "wav48/p270/p270_453.wav",
-      "tgt_utts": [
-        "wav48/p318/p318_337.wav"
-      ],
-      "content": "They were good years for him.\n",
-      "src_second": 2.564172335600907
-    },
-    {
-      "source_speaker": "p334",
-      "target_speaker": "p270",
-      "src_utt": "wav48/p334/p334_243.wav",
-      "tgt_utts": [
-        "wav48/p270/p270_203.wav"
-      ],
-      "content": "They are not an item.",
-      "src_second": 2.5619047619047617
-    },
-    {
-      "source_speaker": "p258",
-      "target_speaker": "p251",
-      "src_utt": "wav48/p258/p258_146.wav",
+      "src_utt": "wav48/p299/p299_361.wav",
       "tgt_utts": [
         "wav48/p251/p251_231.wav"
       ],
-      "content": "The weather forecast isn't good.\n",
-      "src_second": 2.5615873015873016
+      "content": "What's happening to her?",
+      "src_second": 1.2390022675736962
     },
     {
-      "source_speaker": "p343",
-      "target_speaker": "p251",
-      "src_utt": "wav48/p343/p343_331.wav",
+      "source_speaker": "p251",
+      "target_speaker": "p246",
+      "src_utt": "wav48/p251/p251_275.wav",
       "tgt_utts": [
-        "wav48/p251/p251_017.wav"
+        "wav48/p246/p246_174.wav"
       ],
-      "content": "He was a one off.",
-      "src_second": 2.5215873015873016
-    },
-    {
-      "source_speaker": "p283",
-      "target_speaker": "p259",
-      "src_utt": "wav48/p283/p283_457.wav",
-      "tgt_utts": [
-        "wav48/p259/p259_479.wav"
-      ],
-      "content": "I'd never run for them.\n",
-      "src_second": 2.4771428571428573
-    },
-    {
-      "source_speaker": "p255",
-      "target_speaker": "p238",
-      "src_utt": "wav48/p255/p255_335.wav",
-      "tgt_utts": [
-        "wav48/p238/p238_338.wav"
-      ],
-      "content": "They haven't got a hope.\n",
-      "src_second": 2.3924263038548754
+      "content": "I am very angry.\n",
+      "src_second": 1.2373242630385488
     },
     {
       "source_speaker": "p258",
-      "target_speaker": "p252",
-      "src_utt": "wav48/p258/p258_322.wav",
+      "target_speaker": "p312",
+      "src_utt": "wav48/p258/p258_234.wav",
       "tgt_utts": [
-        "wav48/p252/p252_222.wav"
+        "wav48/p312/p312_185.wav"
       ],
-      "content": "He said she was mad.\n",
-      "src_second": 2.3915646258503402
+      "content": "We are in the hat.\n",
+      "src_second": 1.2235374149659863
     },
     {
       "source_speaker": "p283",
-      "target_speaker": "p251",
-      "src_utt": "wav48/p283/p283_429.wav",
+      "target_speaker": "p267",
+      "src_utt": "wav48/p283/p283_313.wav",
       "tgt_utts": [
-        "wav48/p251/p251_095.wav"
+        "wav48/p267/p267_297.wav"
       ],
-      "content": "I'm pleased about one thing.\n",
-      "src_second": 2.3048526077097504
+      "content": "He said he was sorry.\n",
+      "src_second": 1.1861678004535148
     },
     {
-      "source_speaker": "p312",
-      "target_speaker": "p252",
-      "src_utt": "wav48/p312/p312_307.wav",
+      "source_speaker": "p283",
+      "target_speaker": "p267",
+      "src_utt": "wav48/p283/p283_370.wav",
       "tgt_utts": [
-        "wav48/p252/p252_064.wav"
+        "wav48/p267/p267_124.wav"
       ],
-      "content": "Obviously we want to stop the rot.",
-      "src_second": 2.264081632653061
+      "content": "There is a range of employers.\n",
+      "src_second": 1.1589569160997732
     },
     {
-      "source_speaker": "p334",
-      "target_speaker": "p258",
-      "src_utt": "wav48/p334/p334_329.wav",
+      "source_speaker": "p282",
+      "target_speaker": "p299",
+      "src_utt": "wav48/p282/p282_130.wav",
       "tgt_utts": [
-        "wav48/p258/p258_005.wav"
+        "wav48/p299/p299_333.wav"
       ],
-      "content": "I will be standing.",
-      "src_second": 2.261950113378685
+      "content": "No production was achieved.\n",
+      "src_second": 1.0389115646258504
+    },
+    {
+      "source_speaker": "p258",
+      "target_speaker": "p334",
+      "src_utt": "wav48/p258/p258_331.wav",
+      "tgt_utts": [
+        "wav48/p334/p334_020.wav"
+      ],
+      "content": "I am so upset.\n",
+      "src_second": 1.03015873015873
+    },
+    {
+      "source_speaker": "p251",
+      "target_speaker": "p312",
+      "src_utt": "wav48/p251/p251_198.wav",
+      "tgt_utts": [
+        "wav48/p312/p312_191.wav"
+      ],
+      "content": "It was typical.\n",
+      "src_second": 0.9926984126984127
     },
     {
       "source_speaker": "p258",
       "target_speaker": "p246",
-      "src_utt": "wav48/p258/p258_295.wav",
+      "src_utt": "wav48/p258/p258_261.wav",
       "tgt_utts": [
-        "wav48/p246/p246_031.wav"
+        "wav48/p246/p246_043.wav"
       ],
-      "content": "A new school will be built.\n",
-      "src_second": 2.2225850340136053
+      "content": "I am very angry.\n",
+      "src_second": 0.9808163265306122
     },
     {
-      "source_speaker": "p258",
-      "target_speaker": "p343",
-      "src_utt": "wav48/p258/p258_058.wav",
+      "source_speaker": "p252",
+      "target_speaker": "p312",
+      "src_utt": "wav48/p252/p252_150.wav",
       "tgt_utts": [
-        "wav48/p343/p343_246.wav"
+        "wav48/p312/p312_153.wav"
       ],
-      "content": "It should be devolved.\n",
-      "src_second": 2.2224943310657594
-    },
-    {
-      "source_speaker": "p270",
-      "target_speaker": "p334",
-      "src_utt": "wav48/p270/p270_036.wav",
-      "tgt_utts": [
-        "wav48/p334/p334_265.wav"
-      ],
-      "content": "He really is a lovely man.\n",
-      "src_second": 2.2209977324263037
-    },
-    {
-      "source_speaker": "p343",
-      "target_speaker": "p259",
-      "src_utt": "wav48/p343/p343_339.wav",
-      "tgt_utts": [
-        "wav48/p259/p259_191.wav"
-      ],
-      "content": "You have been warned.",
-      "src_second": 2.176916099773243
-    },
-    {
-      "source_speaker": "p267",
-      "target_speaker": "p270",
-      "src_utt": "wav48/p267/p267_163.wav",
-      "tgt_utts": [
-        "wav48/p270/p270_325.wav"
-      ],
-      "content": "Are you from the rugby ?\n",
-      "src_second": 2.1385034013605444
-    },
-    {
-      "source_speaker": "p312",
-      "target_speaker": "p258",
-      "src_utt": "wav48/p312/p312_061.wav",
-      "tgt_utts": [
-        "wav48/p258/p258_385.wav"
-      ],
-      "content": "It was a virus.",
-      "src_second": 2.1355102040816325
-    },
-    {
-      "source_speaker": "p258",
-      "target_speaker": "p334",
-      "src_utt": "wav48/p258/p258_218.wav",
-      "tgt_utts": [
-        "wav48/p334/p334_130.wav"
-      ],
-      "content": "I might come back.\n",
-      "src_second": 1.8779591836734695
+      "content": "Why change it ?\n",
+      "src_second": 0.8822675736961452
     }
   ]
 }

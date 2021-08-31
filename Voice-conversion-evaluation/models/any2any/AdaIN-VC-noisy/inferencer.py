@@ -33,7 +33,7 @@ class Inferencer:
         self.device = device
         self.frame_size = config["data_loader"]["frame_size"]
         self.sample_rate = 16000
-        self.wav2mel_ = Wav2Mel()
+        self.wav2mel = Wav2Mel()
 
     def inference_from_pair(self, pair, source_dir: str, target_dir: str) -> Tensor:
         source_utt = Path(source_dir) / pair["src_utt"]
@@ -43,8 +43,8 @@ class Inferencer:
         src, src_sr = torchaudio.load(source_utt)
         tgt, tgt_sr = torchaudio.load(target_utt)
 
-        src = self.wav2mel_(src, src_sr)
-        tgt = self.wav2mel_(tgt, tgt_sr)
+        src = self.wav2mel.mel(src, src_sr)
+        tgt = self.wav2mel.mel(tgt, tgt_sr)
         if tgt is None or src is None:
             return None
 

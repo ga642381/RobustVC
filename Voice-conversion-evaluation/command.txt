@@ -1,16 +1,29 @@
-=== choose one ===
-python make_metadata.py VCTK /fortress/vc2021/robust-vc/assets/vctk_test_clean VCTK /fortress/vc2021/robust-vc/assets/vctk_test_clean -n 100 -nt 1 -o ./metadata
 
+====== create metadata
 python make_metadata.py VCTK /fortress/vc2021/robust-vc/assets/vctk_test_noisy VCTK /fortress/vc2021/robust-vc/assets/vctk_test_noisy -n 100 -nt 1 -o ./metadata
 
-======
-python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_clean -t /fortress/vc2021/robust-vc/assets/vctk_test_clean -o ./result/clean -r models/any2any/AdaIN-VC
+====== inference 
+--- AdaIN-VC
+python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_vad -t /fortress/vc2021/robust-vc/assets/vctk_test_vad -o ./result/clean_data -r models/any2any/AdaIN-VC-noisy
+python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_noisy -t /fortress/vc2021/robust-vc/assets/vctk_test_noisy -o ./result/noisy_data -r models/any2any/AdaIN-VC-noisy
+--- S2VC
+python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_vad -t /fortress/vc2021/robust-vc/assets/vctk_test_vad -o ./result/clean_data -r models/any2any/S2VC-noisy
+python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_noisy -t /fortress/vc2021/robust-vc/assets/vctk_test_noisy -o ./result/noisy_data -r models/any2any/S2VC-noisy
 
-python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_noisy -t /fortress/vc2021/robust-vc/assets/vctk_test_noisy -o ./result/noisy -r models/any2any/AdaIN-VC
 
-======
-python calculate_objective_metric.py -d ./test_out/AdaIN-VC/VCTK2VCTK/ -r metrics/mean_opinion_score -o test_out_mos
+====== 3 objective metrics (MOS, CER, SVAR)
+python calculate_objective_metric.py -d ./result/clean_data/AdaIN-VC-noisy/VCTK2VCTK/ -r metrics/mean_opinion_score -o ./result/clean_data/AdaIN-VC-noisy
+python calculate_objective_metric.py -d ./result/noisy_data/AdaIN-VC-noisy/VCTK2VCTK/ -r metrics/mean_opinion_score -o ./result/noisy_data/AdaIN-VC-noisy
 
-python calculate_objective_metric.py -d ./test_out/AdaIN-VC/VCTK2VCTK/ -r metrics/character_error_rate -o test_out_cer
+python calculate_objective_metric.py -d ./result/clean_data/AdaIN-VC-noisy/VCTK2VCTK/ -r metrics/character_error_rate -o ./result/clean_data/AdaIN-VC-noisy
+python calculate_objective_metric.py -d ./result/noisy_data/AdaIN-VC-noisy/VCTK2VCTK/ -r metrics/character_error_rate -o ./result/noisy_data/AdaIN-VC-noisy
 
-python calculate_objective_metric.py -d ./test_out/AdaIN-VC/VCTK2VCTK/ -r metrics/speaker_verification -o test_out_eer -t ../VCTK_test_dataset --th metrics/speaker_verification/equal_error_rate/VCTK_eer.yaml
+python calculate_objective_metric.py -d ./result/clean_data/AdaIN-VC-noisy/VCTK2VCTK/ -r metrics/speaker_verification -o ./result/clean_data/AdaIN-VC-noisy -t /fortress/vc2021/robust-vc/assets/vctk_test_vad --th metrics/speaker_verification/equal_error_rate/VCTK_eer.yaml
+python calculate_objective_metric.py -d ./result/noisy_data/AdaIN-VC-noisy/VCTK2VCTK/ -r metrics/speaker_verification -o ./result/noisy_data/AdaIN-VC-noisy -t /fortress/vc2021/robust-vc/assets/vctk_test_vad --th metrics/speaker_verification/equal_error_rate/VCTK_eer.yaml
+
+----
+python calculate_objective_metric.py -d ./result/clean_data/S2VC-noisy/VCTK2VCTK/ -r metrics/mean_opinion_score -o ./result/clean_data/S2VC-noisy
+python calculate_objective_metric.py -d ./result/noisy_data/S2VC-noisy/VCTK2VCTK/ -r metrics/mean_opinion_score -o ./result/noisy_data/S2VC-noisy
+
+python calculate_objective_metric.py -d ./result/clean_data/S2VC-noisy/VCTK2VCTK/ -r metrics/character_error_rate -o ./result/clean_data/S2VC-noisy
+python calculate_objective_metric.py -d ./result/noisy_data/S2VC-noisy/VCTK2VCTK/ -r metrics/character_error_rate -o ./result/noisy_data/S2VC-noisy

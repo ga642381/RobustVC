@@ -54,9 +54,9 @@ class Inferencer:
 
     def inference_from_path(self, src_path: Path, tgt_paths: List[Path]) -> Tensor:
         """Inference from path."""
-        src_wav = load_wav(src_path, sample_rate=self.sample_rate, trim=True)
+        src_wav = load_wav(src_path, sample_rate=self.sample_rate, trim=False)
         tgt_wavs = [
-            load_wav(tgt_path, sample_rate=self.sample_rate, trim=True)
+            load_wav(tgt_path, sample_rate=self.sample_rate, trim=False)
             for tgt_path in tgt_paths
         ]
         result = self.inference(src_wav, tgt_wavs)
