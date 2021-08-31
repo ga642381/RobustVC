@@ -2,4 +2,6 @@ cat command.txt
 
 python dataset_copy.py test /fortress/dataset/VCTK-Corpus ../vctk_test_clean
 
-python dataset_noise.py ../vctk_test_clean ../vctk_test_noisy
+python dataset_resample_vad.py ../vctk_test_clean ../vctk_test_vad 
+
+python dataset_noise.py ../vctk_test_vad ../vctk_test_noisy
