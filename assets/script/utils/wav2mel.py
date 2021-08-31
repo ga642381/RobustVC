@@ -1,1 +1,1 @@
-../../../AdaIN-VC/AdaIN-VC-noisy/data/wav2mel.py
+../../../AdaIN-VC/AdaIN-VC-robust/data/wav2mel.py
