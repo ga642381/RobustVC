@@ -1,6 +1,7 @@
 # robust-vc
 Study of robustness in voice conversion
 
+``` bash
 AdaIN-VC
 ├── AdaIN-VC (original code)
 │   └──data
@@ -33,6 +34,7 @@ assets
 ├── vctk_test_clean (copyed test dataset)
 ├── vctk_test_noisy (added noise to vad dataset)
 └── vctk_test_vad   (resampled, normalized to -3dB, and sox vad)
+```
 
 
 
