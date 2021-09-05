@@ -3,14 +3,36 @@ import os
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import yaml
+from torch import Tensor
 from torch.utils.data import random_split
 from torch.utils.tensorboard import SummaryWriter
 from tqdm.auto import trange
 
 from data import InfiniteDataLoader, SpeakerDataset, infinite_iterator
-from model import AdaINVC
 from data.VCTK_split import train_valid_test
+from model import AdaINVC
+
+
+def emb_attack(
+    model: nn.Module,
+    x: Tensor,
+    eps: float = 0.05,
+    alpha: float = 0.001,
+    n_uttrs: int = 4,
+):
+    ptb = torch.empty_like(x).uniform_(-eps, eps).requires_grad_(True)
+    with torch.no_grad():
+        org_emb = model.speaker_encoder(x)
+        tgt_emb = org_emb.roll(n_uttrs, 0)
+    adv_emb = model.speaker_encoder(x + ptb)
+    loss = F.mse_loss(adv_emb, tgt_emb) - 0.1 * F.mse_loss(adv_emb, org_emb)
+    loss.backward()
+    grad = ptb.grad.data
+    ptb = ptb.data - alpha * grad.sign()
+    adv_x = x + torch.max(torch.min(ptb, eps), -eps)
+    return adv_x.detach()
 
 
 def main(
@@ -42,16 +64,10 @@ def main(
 
     # construct loader
     train_loader = InfiniteDataLoader(
-        train_set,
-        batch_size=n_spks,
-        shuffle=True,
-        num_workers=8,
+        train_set, batch_size=n_spks, shuffle=True, num_workers=8,
     )
     valid_loader = InfiniteDataLoader(
-        valid_set,
-        batch_size=n_spks,
-        shuffle=True,
-        num_workers=8,
+        valid_set, batch_size=n_spks, shuffle=True, num_workers=8,
     )
 
     # construct iterator
@@ -83,7 +99,10 @@ def main(
         clean_mels = clean_mels.flatten(0, 1)
         noisy_mels = noisy_mels.flatten(0, 1)
         clean_mels = clean_mels.to(device)
-        noisy_mels = noisy_mels.to(device)
+        if True:
+            noisy_mels = noisy_mels.to(device)
+        else:
+            noisy_mels = emb_attack(model, clean_mels, n_uttrs=n_uttrs)
 
         # reconstruction
         mu, log_sigma, emb, rec_mels = model(noisy_mels)
