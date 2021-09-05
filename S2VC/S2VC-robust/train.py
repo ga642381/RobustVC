@@ -6,17 +6,17 @@ import datetime
 import random
 from pathlib import Path
 
+import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+from torch import Tensor
 from torch.optim import AdamW
 from torch.utils.data import DataLoader, random_split
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
-import numpy as np
 
-
-from data import IntraSpeakerDataset, collate_batch, plot_attn
-from data import train_valid_test
+from data import IntraSpeakerDataset, collate_batch, plot_attn, train_valid_test
 from models import S2VC, get_cosine_schedule_with_warmup
 
 random.seed(42)
@@ -49,6 +49,30 @@ def parse_args():
     return vars(parser.parse_args())
 
 
+def extract_ref_feats(model: nn.Module, refs: Tensor):
+    ref1 = model.unet.conv1(refs)
+    ref2 = model.unet.conv2(F.relu(ref1))
+    ref3 = model.unet.conv3(F.relu(ref2))
+    return ref3
+
+
+def emb_attack(
+    model: nn.Module, x: Tensor, eps: float = 0.05, alpha: float = 0.001,
+):
+    ptb = torch.empty_like(x).uniform_(-eps, eps).requires_grad_(True)
+    with torch.no_grad():
+        org_emb = extract_ref_feats(model, x)
+        # perform some roll
+        tgt_emb = org_emb.roll(4, 0)
+    adv_emb = extract_ref_feats(model, x + ptb)
+    loss = F.mse_loss(adv_emb, tgt_emb) - 0.1 * F.mse_loss(adv_emb, org_emb)
+    loss.backward()
+    grad = ptb.grad.data
+    ptb = ptb.data - alpha * grad.sign()
+    adv_x = x + torch.max(torch.min(ptb, eps), -eps)
+    return adv_x.detach()
+
+
 def model_fn(batch, model, criterion, device):
     """Forward a batch through model."""
 
@@ -63,7 +87,11 @@ def model_fn(batch, model, criterion, device):
     refs = tgts
     ref_masks = tgt_masks
 
-    outs, attns = model(srcs, refs, src_masks=src_masks, ref_masks=ref_masks)
+    if True:
+        advs = emb_attack(model, tgt_mels)
+        outs, attns = model(srcs, advs, src_masks=src_masks, ref_masks=ref_masks)
+    else:
+        outs, attns = model(srcs, refs, src_masks=src_masks, ref_masks=ref_masks)
 
     losses = []
     for out, tgt_mel, attn, overlap_len in zip(
