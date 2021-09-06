@@ -61,4 +61,9 @@ class SpeakerDataset(Dataset):
             ]
         ).squeeze(1)
 
-        return self.wav2mel.mel(clean_wavs), self.wav2mel.mel(noisy_wavs)
+        return (
+            self.wav2mel.mel(clean_wavs),
+            self.wav2mel.mel(noisy_wavs),
+            clean_wavs,
+            noisy_wavs,
+        )

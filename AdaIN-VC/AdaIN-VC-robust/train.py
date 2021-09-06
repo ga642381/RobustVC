@@ -12,27 +12,29 @@ from tqdm.auto import trange
 
 from data import InfiniteDataLoader, SpeakerDataset, infinite_iterator
 from data.VCTK_split import train_valid_test
+from data.wav2mel import Wav2Mel
 from model import AdaINVC
 
 
 def emb_attack(
     model: nn.Module,
     x: Tensor,
-    eps: float = 0.05,
+    wav2mel: Wav2Mel,
+    eps: float = 0.005,
     alpha: float = 0.001,
     n_uttrs: int = 4,
 ):
     ptb = torch.empty_like(x).uniform_(-eps, eps).requires_grad_(True)
     with torch.no_grad():
-        org_emb = model.speaker_encoder(x)
+        org_emb = model.speaker_encoder(wav2mel.forward_batch(x))
         tgt_emb = org_emb.roll(n_uttrs, 0)
-    adv_emb = model.speaker_encoder(x + ptb)
+    adv_emb = model.speaker_encoder(wav2mel.forward_batch(x + ptb))
     loss = F.mse_loss(adv_emb, tgt_emb) - 0.1 * F.mse_loss(adv_emb, org_emb)
     loss.backward()
     grad = ptb.grad.data
     ptb = ptb.data - alpha * grad.sign()
     adv_x = x + torch.max(torch.min(ptb, eps), -eps)
-    return adv_x.detach()
+    return wav2mel.forward_batch(adv_x.detach())
 
 
 def main(
@@ -95,14 +97,17 @@ def main(
 
     for step in pbar:
         # get features
-        clean_mels, noisy_mels = next(train_iter)
+        clean_mels, noisy_mels, _, noisy_wavs = next(train_iter)
         clean_mels = clean_mels.flatten(0, 1)
         noisy_mels = noisy_mels.flatten(0, 1)
         clean_mels = clean_mels.to(device)
         if True:
             noisy_mels = noisy_mels.to(device)
         else:
-            noisy_mels = emb_attack(model, clean_mels, n_uttrs=n_uttrs)
+            noisy_wavs = noisy_wavs.to(device)
+            noisy_mels = emb_attack(
+                model, noisy_wavs, train_set.wav2mel, n_uttrs=n_uttrs
+            )
 
         # reconstruction
         mu, log_sigma, emb, rec_mels = model(noisy_mels)
