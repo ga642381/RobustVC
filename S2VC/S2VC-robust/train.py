@@ -4,6 +4,7 @@
 import argparse
 import datetime
 import random
+from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
@@ -18,6 +19,7 @@ from tqdm import tqdm
 
 from data import IntraSpeakerDataset, collate_batch, plot_attn, train_valid_test
 from models import S2VC, get_cosine_schedule_with_warmup
+from data.feature_extract import FeatureExtractor
 
 random.seed(42)
 torch.manual_seed(42)
@@ -49,34 +51,70 @@ def parse_args():
     return vars(parser.parse_args())
 
 
-def extract_ref_feats(model: nn.Module, refs: Tensor):
+def extract_ref_feats(model: nn.Module, refs: Tensor, masks: Tensor):
     ref1 = model.unet.conv1(refs)
     ref2 = model.unet.conv2(F.relu(ref1))
     ref3 = model.unet.conv3(F.relu(ref2))
-    return ref3
+    cum_sum = ref3.cumsum(dim=-1)
+    lens = masks.sum(dim=-1)
+    assert lens.ndim == 1
+    cum_sum = cum_sum.index_select(-1, lens.int()).squeeze(-1)
+    spk_emb = cum_sum / lens[:, None]
+    return spk_emb
 
+def permute_spks(spk_lst):
+    spk_idx = defaultdict(list)
+    for idx, spk in enumerate(spk_lst):
+        spk_idx[spk].append(idx)
+    
+    if len(spk_idx) == 1:
+        tmp = list(range(len(spk_lst)))
+        return tmp[1:] + tmp[0]
+
+    final_lst = list(range(len(spk_lst)))
+    for spk, idx in spk_idx.items():
+        other_spks = [s for s in spk_idx.keys() if s != spk]
+        for i in idx:
+            tgt_spk = random.choice(other_spks)
+            tgt_idx = random.choice(spk_idx[tgt_spk])
+            final_lst[i] = tgt_idx
+    return final_lst
 
 def emb_attack(
-    model: nn.Module, x: Tensor, eps: float = 0.05, alpha: float = 0.001,
+    model, feat_extractor, tgts, tgt_wavs, masks, spks, eps = 0.05, alpha = 0.001,
 ):
-    ptb = torch.empty_like(x).uniform_(-eps, eps).requires_grad_(True)
+    ptb = torch.empty_like(tgt_wavs).uniform_(-eps, eps).requires_grad_(True)
+    ptb_feats = feat_extractor.get_feature(tgts + ptb)[0]
     with torch.no_grad():
-        org_emb = extract_ref_feats(model, x)
+        org_emb = extract_ref_feats(model, tgts, masks)
         # perform some roll
-        tgt_emb = org_emb.roll(4, 0)
-    adv_emb = extract_ref_feats(model, x + ptb)
+        ptb_index = permute_spks(spks)
+        tgt_emb = org_emb[ptb_index]
+    adv_emb = extract_ref_feats(model, ptb_feats, masks)
     loss = F.mse_loss(adv_emb, tgt_emb) - 0.1 * F.mse_loss(adv_emb, org_emb)
     loss.backward()
     grad = ptb.grad.data
     ptb = ptb.data - alpha * grad.sign()
-    adv_x = x + torch.max(torch.min(ptb, eps), -eps)
-    return adv_x.detach()
+    with torch.no_grad():
+        adv_wavs = tgt_wavs + torch.max(torch.min(ptb, eps), -eps)
+        adv_feats = feat_extractor.get_feature(adv_wavs)[0]
+    return adv_feats
 
 
-def model_fn(batch, model, criterion, device):
+def model_fn(batch, model, criterion, feat_extractor, device):
     """Forward a batch through model."""
 
-    srcs, src_masks, tgts, tgt_masks, tgt_mels, overlap_lens = batch
+    (
+        srcs,
+        src_masks,
+        tgts,
+        tgt_masks,
+        tgt_mels,
+        overlap_lens,
+        src_wavs,
+        tgt_wavs,
+        spks,
+    ) = batch
 
     srcs = srcs.to(device)
     src_masks = src_masks.to(device)
@@ -88,7 +126,8 @@ def model_fn(batch, model, criterion, device):
     ref_masks = tgt_masks
 
     if True:
-        advs = emb_attack(model, tgt_mels)
+        tgt_wavs = tgt_wavs.to(device)
+        advs = emb_attack(model, feat_extractor, tgts, tgt_wavs, tgt_masks, spks)
         outs, attns = model(srcs, advs, src_masks=src_masks, ref_masks=ref_masks)
     else:
         outs, attns = model(srcs, refs, src_masks=src_masks, ref_masks=ref_masks)
@@ -153,6 +192,8 @@ def main(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     metadata_path = Path(data_dir) / "metadata.json"
+
+    feature_extractor = FeatureExtractor(ref_feat, None, device=device)
 
     # dataset = IntraSpeakerDataset(
     #     data_dir, metadata_path, src_feat, ref_feat, n_samples, preload
@@ -243,7 +284,7 @@ def main(
                 train_iterator = iter(train_loader)
                 batch = next(train_iterator)
 
-            loss, attns = model_fn(batch, model, criterion, device)
+            loss, attns = model_fn(batch, model, criterion, feature_extractor, device)
             loss = loss / accu_steps
             batch_loss += loss.item()
             loss.backward()

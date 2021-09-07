@@ -93,9 +93,9 @@ class IntraSpeakerDataset(Dataset):
     # __getitem__ <-- _get_data <-- _load_data
     def __getitem__(self, index):
         # speaker_name, content_emb, target_emb, target_mel = self._get_data(index)
-        _, content_wav, target_wav, target_mel = self._get_data(index)
+        speaker_name, content_wav, target_wav, target_mel, content_noisy_wav, target_noisy_wav = self._get_data(index)
         # return content_emb, target_emb, target_mel
-        return content_wav, target_wav, target_mel
+        return speaker_name, content_wav, target_wav, target_mel, content_noisy_wav, target_noisy_wav
 
     def _get_data(self, index):
         if self.pre_load:
@@ -129,7 +129,7 @@ class IntraSpeakerDataset(Dataset):
         self.ref_dim = target_emb.shape[1]
         self.tgt_dim = target_mel.shape[1]
 
-        return speaker_name, content_emb, target_emb, target_mel
+        return speaker_name, content_emb, target_emb, target_mel, content_noisy_wav, target_noisy_wav
 
     def get_feat_dim(self):
         self._get_data(0)
@@ -176,7 +176,8 @@ def collate_batch(batch):
     tgt_mels      : (batch, mel_dim, max_tgt_mel_len)
     overlap_lens  : list, len == batch_size 
     """
-    srcs, tgts, tgt_mels = zip(*batch)
+    # srcs, tgts, tgt_mels = zip(*batch)
+    spks, srcs, tgts, tgt_mels, src_wavs, tgt_wavs = zip(*batch)
 
     src_lens = [len(src) for src in srcs]
     tgt_lens = [len(tgt) for tgt in tgts]
@@ -201,4 +202,4 @@ def collate_batch(batch):
     tgt_mels = pad_sequence(tgt_mels, batch_first=True, padding_value=-20)
     tgt_mels = tgt_mels.transpose(1, 2)  # (batch, mel_dim, max_tgt_len)
 
-    return srcs, src_masks, tgts, tgt_masks, tgt_mels, overlap_lens
+    return srcs, src_masks, tgts, tgt_masks, tgt_mels, overlap_lens, src_wavs, tgt_wavs, spks
