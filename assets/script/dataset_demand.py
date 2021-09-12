@@ -72,7 +72,7 @@ def process_save_wav(wav_file, processor, data_dir, noise_dir, save_dir):
     noise_tensor, sr2 = torchaudio.load(noise_subdir / noise_filename)
     assert sr1 == sr2, "input wav and DEMAND should have the same sampling rate"
 
-    # add
+    # add noise
     noisy_wav = processor(wav_tensor, noise_tensor, snr)
 
     # save
@@ -123,6 +123,7 @@ def main(data_dir, noise_dir, save_dir):
 
 
 if __name__ == "__main__":
+    torchaudio.set_audio_backend("sox_io")
     parser = argparse.ArgumentParser()
     parser.add_argument("data_dir", type=Path)
     parser.add_argument("noise_dir", type=Path)

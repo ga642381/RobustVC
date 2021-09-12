@@ -14,4 +14,6 @@ python dataset_demand.py ../vctk_test_clean /fortress/dataset/vc2021/demand ../v
 
 // training dataset
 
+python dataset_resample_vad.py /fortress/dataset/VCTK-Corpus /fortress/dataset/vc2021/vctk_all_vad --out_sample_rate 16000
+
 python dataset_demand.py /fortress/dataset/vc2021/vctk_all_vad /fortress/dataset/vc2021/demand /fortress/dataset/vc2021/vctk_all_vad_demand
