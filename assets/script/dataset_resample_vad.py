@@ -1,15 +1,16 @@
 import argparse
+import os
+from functools import partial
+from multiprocessing import Pool, cpu_count
+from pathlib import Path
 from random import sample
+
 import librosa
 import torch
 import torchaudio
 from tqdm import tqdm
-from utils.wav2mel import SoxEffects
-from pathlib import Path
-import os
-from functools import partial
-from multiprocessing import Pool, cpu_count
 
+from utils.wav2mel import SoxEffects
 
 """
 The reason we seperate vad from sox effect and make it an independent script is that
@@ -62,7 +63,7 @@ def main(data_dir, save_dir, out_sample_rate):
     print(f"[INFO] {len(wav_files)} wav files found in {data_dir}")
 
     # add noise
-    sox_effects = SoxEffects(sample_rate=out_sample_rate, norm_db=-3)
+    sox_effects = SoxEffects(resample=True, norm_vad=True, norm=False, sample_rate=out_sample_rate)
     file_to_processed_file = partial(
         process_save_wav,
         processor=sox_effects,

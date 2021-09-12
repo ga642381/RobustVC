@@ -5,3 +5,15 @@ python dataset_copy.py test /fortress/dataset/VCTK-Corpus ../vctk_test_clean
 python dataset_resample_vad.py ../vctk_test_clean ../vctk_test_vad 
 
 python dataset_noise.py ../vctk_test_vad ../vctk_test_noisy
+
+python dataset_demucs.py ../vctk_test_noisy ../vctk_test_demucs
+
+python dataset_metricgan.py ../vctk_test_noisy ../vctk_test_metricgan
+
+python dataset_demand.py ../vctk_test_clean /fortress/dataset/vc2021/demand ../vctk_test_demand 
+
+// training dataset
+
+python dataset_resample_vad.py /fortress/dataset/VCTK-Corpus /fortress/dataset/vc2021/vctk_all_vad --out_sample_rate 16000
+
+python dataset_demand.py /fortress/dataset/vc2021/vctk_all_vad /fortress/dataset/vc2021/demand /fortress/dataset/vc2021/vctk_all_vad_demand

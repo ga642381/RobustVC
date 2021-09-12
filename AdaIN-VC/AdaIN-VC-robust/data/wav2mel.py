@@ -34,7 +34,9 @@ class Wav2Mel(torch.nn.Module):
         self.ref_db = ref_db
         self.dc_db = dc_db
 
-        self.sox_effects = SoxEffects(sample_rate, norm_db)
+        self.sox_effects = SoxEffects(
+            resample=True, norm_vad=True, norm=False, norm_db=norm_db
+        )
         self.log_melspectrogram = LogMelspectrogram(
             sample_rate,
             fft_window_ms,
@@ -47,7 +49,7 @@ class Wav2Mel(torch.nn.Module):
             dc_db,
         )
 
-    def mel(self, wav_tensor: torch.Tensor, sample_rate: int) -> torch.Tensor:
+    def mel(self, wav_tensor: torch.Tensor) -> torch.Tensor:
         mel_tensor = self.log_melspectrogram(wav_tensor)
         return mel_tensor
 
@@ -65,20 +67,33 @@ class Wav2Mel(torch.nn.Module):
 class SoxEffects(torch.nn.Module):
     """Transform waveform tensors."""
 
-    def __init__(self, sample_rate: int, norm_db: float):
+    def __init__(
+        self,
+        resample: bool = True,
+        norm_vad: bool = True,
+        norm: bool = False,
+        sample_rate: int = 16000,
+        norm_db: float = -3,
+    ):
         super().__init__()
         self.effects = [
             ["channels", "1"],  # convert to mono
-            ["rate", f"{sample_rate}"],  # resample
-            ["norm", f"{norm_db}"],  # normalize to -3 dB
-            ["vad"],
-            ["reverse"],
-            ["vad"],
-            ["reverse"]
-            # remove silence throughout the file
-            # vad only trim beginning of the utternece
-            # use "reverse" to trim the end of the utterence
         ]
+
+        if resample:
+            self.effects.extend([["rate", f"{sample_rate}"]])
+
+        if norm_vad:
+            # remove silence throughout the file; vad only trim beginning of the utternece
+            # 1. use "reverse" to trim the end of the utterence
+            # 2. norm before vad is recommended
+            self.effects.extend([["norm"], ["vad"], ["reverse"], ["vad"], ["reverse"]])
+
+        if norm:
+            self.effects.extend([["norm", f"{norm_db}"]])
+
+        # === print effect chains === #
+        print(f"[INFO] sox_effects : {self.effects}")
 
     def forward(self, wav_tensor: torch.Tensor, sample_rate: int) -> torch.Tensor:
         wav_tensor, _ = apply_effects_tensor(wav_tensor, sample_rate, self.effects)
