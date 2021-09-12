@@ -91,7 +91,7 @@ def main(data_dir, noise_dir, save_dir):
     assert noise_dir.exists(), f"{noise_dir} does not exist!"
     print(f"[INFO] Task : Adding Noise from Noise Dataset DEMAND")
     print(f"[INFO] data_dir : {data_dir}")
-    print(f"[INFO] data_dir : {noise_dir}")
+    print(f"[INFO] noise_dir : {noise_dir}")
     print(f"[INFO] save_dir : {save_dir}")
     save_dir.mkdir(parents=True, exist_ok=True)
 

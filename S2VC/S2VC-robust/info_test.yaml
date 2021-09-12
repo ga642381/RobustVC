@@ -1,4 +1,14 @@
-p238 -> p302:
-  source: ../../VCTK_test_dataset/wav48/p238/p238_060.wav
+p243_347_enhance:
+  source: /fortress/vc2021/robust-vc/assets/vctk_test_noisy/wav48/p243/p243_347.wav
   target:
-  - ../../VCTK_test_dataset/wav48/p302/p302_007.wav 
+    - /fortress/vc2021/robust-vc/assets/vctk_test_noisy/wav48/p243/p243_347.wav
+
+p238_244_enhance:
+  source: /fortress/vc2021/robust-vc/assets/vctk_test_noisy/wav48/p238/p238_244.wav
+  target:
+    - /fortress/vc2021/robust-vc/assets/vctk_test_noisy/wav48/p238/p238_244.wav
+
+p334_160_enhance:
+  source: /fortress/vc2021/robust-vc/assets/vctk_test_noisy/wav48/p334/p334_160.wav
+  target:
+    - /fortress/vc2021/robust-vc/assets/vctk_test_noisy/wav48/p334/p334_160.wav
