@@ -1,15 +1,16 @@
-import torch
-import augment
-import numpy as np
 import random
 from functools import partial
+
+import augment
+import numpy as np
+import torch
 
 
 class WavAug:
     def __init__(
         self,
         sample_rate=16000,
-        p_clean=0.5,
+        p_clean=0.5,  # !TODO outside
         p_add=1,
         p_reverb=0.5,
         p_band=0.5,

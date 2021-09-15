@@ -5,18 +5,19 @@ from typing import Optional, Tuple
 import torch.nn.functional as F
 from torch import Tensor, bmm
 from torch.nn import (
-    Module,
-    Dropout,
-    LayerNorm,
     Conv1d,
-    MultiheadAttention,
-    Sequential,
-    Linear,
-    ReLU,
-    Sigmoid,
+    Dropout,
     InstanceNorm1d,
+    LayerNorm,
+    Linear,
+    Module,
+    MultiheadAttention,
+    ReLU,
+    Sequential,
+    Sigmoid,
 )
-from torch.nn.modules.linear import _LinearWithBias
+
+# from torch.nn.modules.linear import _LinearWithBias
 
 
 class Smoother(Module):
@@ -76,11 +77,11 @@ class Extractor(Module):
         super(Extractor, self).__init__()
         self.self_attn = MultiheadAttention(d_model, nhead, dropout=dropout)
         self.cross_attn = MultiheadAttention(bottleneck_dim, nhead, dropout=dropout)
-        self.out_proj = _LinearWithBias(d_model, d_model)
+        self.out_proj = Linear(d_model, d_model)
 
         self.conv1 = Conv1d(d_model, d_hid, 9, padding=4)
         self.conv2 = Conv1d(d_hid, d_model, 1, padding=0)
-        
+
         self.bottleneck = bottleneck
         self.tgt_bottleneck = Sequential(
             Linear(d_model, d_model),
@@ -139,7 +140,7 @@ class Extractor(Module):
             attn_mask=memory_mask,
             key_padding_mask=memory_key_padding_mask,
         )
-        
+
         if self.bottleneck and attn is not None:
             memory = (
                 memory.contiguous()

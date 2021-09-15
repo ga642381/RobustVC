@@ -10,6 +10,7 @@ class Wav2Mel(torch.nn.Module):
 
     def __init__(
         self,
+        sox_effect: bool,
         sample_rate: float = 16000,
         norm_db: float = -3.0,
         fft_window_ms: float = 50.0,
@@ -34,9 +35,12 @@ class Wav2Mel(torch.nn.Module):
         self.ref_db = ref_db
         self.dc_db = dc_db
 
-        self.sox_effects = SoxEffects(
-            resample=True, norm_vad=True, norm=False, norm_db=norm_db
-        )
+        # sox effect
+        if sox_effect:
+            self.sox_effects = SoxEffects(
+                resample=True, norm_vad=True, norm=False, norm_db=norm_db
+            )
+        # mel spectrogram
         self.log_melspectrogram = LogMelspectrogram(
             sample_rate,
             fft_window_ms,
@@ -144,16 +148,16 @@ class LogMelspectrogram(torch.nn.Module):
         mel_tensor = (mel_tensor - self.ref_db + self.dc_db) / self.dc_db
         return mel_tensor
 
-    def forward_batch(self, wav_tensor: torch.Tensor) -> torch.Tensor:
-        # preemph
-        # wav_tensor: batch, length
-        assert len(wav_tensor.shape) == 2 and len(wav_tensor) > 1
-        wav_tensor = torch.cat(
-            wav_tensor[:, 0],
-            wav_tensor[:, 1:] - self.preemph * wav_tensor[:, :-1],
-            dim=-1,
-        )
-        mel_tensor = self.melspectrogram(wav_tensor)  # batch, n_mels, time
-        mel_tensor = 20 * mel_tensor.clamp(min=1e-9).log10()
-        mel_tensor = (mel_tensor - self.ref_db + self.dc_db) / self.dc_db
-        return mel_tensor
+    # def forward_batch(self, wav_tensor: torch.Tensor) -> torch.Tensor:
+    #     # preemph
+    #     # wav_tensor: batch, length
+    #     assert len(wav_tensor.shape) == 2 and len(wav_tensor) > 1
+    #     wav_tensor = torch.cat(
+    #         wav_tensor[:, 0],
+    #         wav_tensor[:, 1:] - self.preemph * wav_tensor[:, :-1],
+    #         dim=-1,
+    #     )
+    #     mel_tensor = self.melspectrogram(wav_tensor)  # batch, n_mels, time
+    #     mel_tensor = 20 * mel_tensor.clamp(min=1e-9).log10()
+    #     mel_tensor = (mel_tensor - self.ref_db + self.dc_db) / self.dc_db
+    #     return mel_tensor

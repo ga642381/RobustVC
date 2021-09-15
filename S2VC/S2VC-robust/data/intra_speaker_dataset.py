@@ -2,16 +2,15 @@
 
 import json
 import random
-from pathlib import Path
-from copy import deepcopy
 from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
+from pathlib import Path
 
 import torch
-
+from torch.nn.utils.rnn import pad_sequence
+from torch.utils.data import Dataset
 # from torch._C import device
 from tqdm import tqdm
-from torch.utils.data import Dataset
-from torch.nn.utils.rnn import pad_sequence
 
 from .feature_extract import FeatureExtractor
 from .noise import WavAug
@@ -36,12 +35,13 @@ class IntraSpeakerDataset(Dataset):
         src_feat,
         ref_feat,
         n_samples=5,
-        pre_load=False,
         training=True,
+        clean_wav_ratio=0.4,
     ):
         with open(metadata_path, "r") as f:
             metadata = json.load(f)
 
+        # _process_data
         executor = ThreadPoolExecutor(max_workers=4)
         futures = []
         for speaker_name, utterances in metadata.items():
@@ -53,12 +53,11 @@ class IntraSpeakerDataset(Dataset):
                             speaker_name,
                             data_dir,
                             utterance,
-                            pre_load,
                             src_feat,
                             ref_feat,
                         )
                     )
-
+        # add data
         self.data = []
         self.speaker_to_indices = {}
         for i, future in enumerate(tqdm(futures, ncols=0)):
@@ -70,14 +69,15 @@ class IntraSpeakerDataset(Dataset):
             else:
                 self.speaker_to_indices[speaker_name].append(i)
 
+        # init
         self.split_type = split_type
         self.split_spks = split_spks
         self.data_dir = Path(data_dir)
         self.n_samples = n_samples
-        self.pre_load = pre_load
         self.training = training
         self.src_feat = src_feat
         self.ref_feat = ref_feat
+        self.clean_wav_ratio = clean_wav_ratio
         self.src_dim = -1
         self.ref_dim = -1
         self.tgt_dim = -1
@@ -92,75 +92,106 @@ class IntraSpeakerDataset(Dataset):
 
     # __getitem__ <-- _get_data <-- _load_data
     def __getitem__(self, index):
-        # speaker_name, content_emb, target_emb, target_mel = self._get_data(index)
-        speaker_name, content_wav, target_wav, target_mel, content_noisy_wav, target_noisy_wav = self._get_data(index)
-        # return content_emb, target_emb, target_mel
-        return speaker_name, content_wav, target_wav, target_mel, content_noisy_wav, target_noisy_wav
+        (
+            speaker_name,
+            source_emb,
+            target_emb,
+            ground_mel,
+            source_wav,
+            target_wav,
+        ) = self._get_data(index)
+        return (
+            speaker_name,
+            source_emb,
+            target_emb,
+            ground_mel,
+            source_wav,
+            target_wav,
+        )
 
     def _get_data(self, index):
-        if self.pre_load:
-            speaker_name, content_wav, _, target_wav, _, target_mel = self.data[index]
-        else:
-            # noisy training try this first
-            speaker_name, content_wav, _, target_wav, _, target_mel = _load_data(
-                *self.data[index]
-            )
+        # noisy training try this first
+        (
+            speaker_name,
+            source_clean_wav,  # vad
+            source_noisy_wav,  # demand
+            target_clean_wav,  # vad
+            target_noisy_wav,  # demand
+            ground_mel,
+        ) = _load_data(*self.data[index])
+
         # === add noise === #
         # wav -> wav (noisy) -> cpc
         if self.src_feat == self.ref_feat:
             # same noisy wav and ssl feature for training
-            content_noisy_wav = self.wavaug.add_noise(content_wav)
-            content_emb = (
-                self.src_feat_extractor.get_feature(content_noisy_wav)[0].detach().cpu()
-            )
-            target_emb = content_emb
+            # 40% clean
+            if random.random() < self.clean_wav_ratio:
+                source_wav = source_clean_wav  # clean
+
+            # 60% noisy + wavaug
+            else:
+                source_wav = source_noisy_wav  # demand
+                source_wav = self.wavaug.add_noise(source_wav)
+
+            # source_emb = (
+            #     self.src_feat_extractor.get_feature([source_wav.squeeze(0)])[0]
+            #     .detach()
+            #     .cpu()
+            # )
+            target_wav = source_wav
+            # target_emb = source_emb
         else:
-            # more general training scheme
-            content_noisy_wav = self.wavaug.add_noise(content_wav)
-            target_noisy_wav = self.wavaug.add_noise(target_wav)
-            content_emb = (
-                self.src_feat_extractor.get_feature(content_noisy_wav)[0].detach().cpu()
-            )
-            target_emb = (
-                self.ref_feat_extractor.get_feature(target_noisy_wav)[0].detach().cpu()
+            raise NotImplementedError(
+                "not implemented different features, pls check github history before 20210915, it's easy"
             )
 
-        self.src_dim = content_emb.shape[1]
-        self.ref_dim = target_emb.shape[1]
-        self.tgt_dim = target_mel.shape[1]
+        # set shapes
+        # self.src_dim = source_emb.shape[1]
+        # self.ref_dim = target_emb.shape[1]
+        self.src_dim = 256
+        self.ref_dim = 256
+        self.tgt_dim = ground_mel.shape[1]
 
-        return speaker_name, content_emb, target_emb, target_mel, content_noisy_wav, target_noisy_wav
+        return (
+            speaker_name,
+            ground_mel,
+            source_wav,  # for training : (clean + demand + aug)
+            target_wav,  # for training : (clean + demand + aug)
+        )
 
     def get_feat_dim(self):
         self._get_data(0)
         return self.src_dim, self.ref_dim, self.tgt_dim
 
 
-def _process_data(speaker_name, data_dir, feature, pre_load, src_feat, ref_feat):
-    _, src_feature_path, ref_feature_path = (
-        feature["audio_path"],
+def _process_data(speaker_name, data_dir, feature, src_feat, ref_feat):
+    _, _, src_feature_path, ref_feature_path = (
+        feature["clean_audio_path"],
+        feature["noisy_audio_path"],
         feature[src_feat],
         feature[ref_feat],
     )
-    if pre_load:
-        return _load_data(speaker_name, data_dir, src_feature_path, ref_feature_path)
-    else:
-        return speaker_name, data_dir, src_feature_path, ref_feature_path
+    return speaker_name, data_dir, src_feature_path, ref_feature_path
 
 
 def _load_data(speaker_name, data_dir, src_feature_path, ref_feature_path):
-    # feature : {"feat": tensor, "wav" : tensor, "mel" : tensor}
     src_feature = torch.load(Path(data_dir, src_feature_path), "cpu")
     ref_feature = torch.load(Path(data_dir, ref_feature_path), "cpu")
 
-    content_wav = src_feature["wav"].detach().cpu()
-    content_emb = src_feature["feat"].detach().cpu()
+    source_clean_wav = src_feature["clean_wav"].detach().cpu()
+    source_noisy_wav = src_feature["noisy_wav"].detach().cpu()
+    target_clean_wav = ref_feature["clean_wav"].detach().cpu()
+    target_noisy_wav = ref_feature["noisy_wav"].detach().cpu()
 
-    target_wav = ref_feature["wav"].detach().cpu()
-    target_emb = ref_feature["feat"].detach().cpu()
-
-    target_mel = src_feature["mel"].detach().cpu()
-    return speaker_name, content_wav, content_emb, target_wav, target_emb, target_mel
+    ground_mel = src_feature["clean_mel"].detach().cpu()
+    return (
+        speaker_name,
+        source_clean_wav,
+        source_noisy_wav,
+        target_clean_wav,
+        target_noisy_wav,
+        ground_mel,
+    )
 
 
 # ==== collate function === #
@@ -176,7 +207,6 @@ def collate_batch(batch):
     tgt_mels      : (batch, mel_dim, max_tgt_mel_len)
     overlap_lens  : list, len == batch_size 
     """
-    # srcs, tgts, tgt_mels = zip(*batch)
     spks, srcs, tgts, tgt_mels, src_wavs, tgt_wavs = zip(*batch)
 
     src_lens = [len(src) for src in srcs]
@@ -202,4 +232,14 @@ def collate_batch(batch):
     tgt_mels = pad_sequence(tgt_mels, batch_first=True, padding_value=-20)
     tgt_mels = tgt_mels.transpose(1, 2)  # (batch, mel_dim, max_tgt_len)
 
-    return srcs, src_masks, tgts, tgt_masks, tgt_mels, overlap_lens, src_wavs, tgt_wavs, spks
+    return (
+        srcs,
+        src_masks,
+        tgts,
+        tgt_masks,
+        tgt_mels,
+        overlap_lens,
+        src_wavs,
+        tgt_wavs,
+        spks,
+    )

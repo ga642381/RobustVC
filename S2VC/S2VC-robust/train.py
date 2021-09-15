@@ -18,8 +18,8 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
 from data import IntraSpeakerDataset, collate_batch, plot_attn, train_valid_test
-from models import S2VC, get_cosine_schedule_with_warmup
 from data.feature_extract import FeatureExtractor
+from models import S2VC, get_cosine_schedule_with_warmup
 
 random.seed(42)
 torch.manual_seed(42)
@@ -33,6 +33,8 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("data_dir", type=str)
     parser.add_argument("--save_dir", type=str, default=".")
+    parser.add_argument("--clean_ratio", type=float, default=0.4)  #
+    parser.add_argument("--adv_ratio", type=float, default=0.5)  #
     parser.add_argument("--total_steps", type=int, default=250000)
     parser.add_argument("--warmup_steps", type=int, default=100)
     parser.add_argument("--valid_steps", type=int, default=1000)
@@ -44,7 +46,6 @@ def parse_args():
     parser.add_argument("--n_workers", type=int, default=8)
     parser.add_argument("-s", "--src_feat", type=str, default="cpc")
     parser.add_argument("-r", "--ref_feat", type=str, default="cpc")
-    parser.add_argument("--preload", action="store_true")
     parser.add_argument("--lr_reduction", action="store_true")
     parser.add_argument("--comment", type=str)
 
@@ -62,11 +63,12 @@ def extract_ref_feats(model: nn.Module, refs: Tensor, masks: Tensor):
     spk_emb = cum_sum / lens[:, None]
     return spk_emb
 
+
 def permute_spks(spk_lst):
     spk_idx = defaultdict(list)
     for idx, spk in enumerate(spk_lst):
         spk_idx[spk].append(idx)
-    
+
     if len(spk_idx) == 1:
         tmp = list(range(len(spk_lst)))
         return tmp[1:] + tmp[0]
@@ -80,8 +82,16 @@ def permute_spks(spk_lst):
             final_lst[i] = tgt_idx
     return final_lst
 
+
 def emb_attack(
-    model, feat_extractor, tgts, tgt_wavs, masks, spks, eps = 0.05, alpha = 0.001,
+    model,
+    feat_extractor,
+    tgts,
+    tgt_wavs,
+    masks,
+    spks,
+    eps=0.05,
+    alpha=0.001,
 ):
     ptb = torch.empty_like(tgt_wavs).uniform_(-eps, eps).requires_grad_(True)
     ptb_feats = feat_extractor.get_feature(tgts + ptb)[0]
@@ -101,7 +111,7 @@ def emb_attack(
     return adv_feats
 
 
-def model_fn(batch, model, criterion, feat_extractor, device):
+def model_fn(batch, model, adv_ratio, criterion, feat_extractor, device):
     """Forward a batch through model."""
 
     (
@@ -111,8 +121,8 @@ def model_fn(batch, model, criterion, feat_extractor, device):
         tgt_masks,
         tgt_mels,
         overlap_lens,
-        src_wavs,
-        tgt_wavs,
+        src_wavs,  #!
+        tgt_wavs,  #!
         spks,
     ) = batch
 
@@ -125,7 +135,7 @@ def model_fn(batch, model, criterion, feat_extractor, device):
     refs = tgts
     ref_masks = tgt_masks
 
-    if True:
+    if random.random() < adv_ratio:
         tgt_wavs = tgt_wavs.to(device)
         advs = emb_attack(model, feat_extractor, tgts, tgt_wavs, tgt_masks, spks)
         outs, attns = model(srcs, advs, src_masks=src_masks, ref_masks=ref_masks)
@@ -157,7 +167,7 @@ def valid(dataloader, model, criterion, device):
 
     for i, batch in enumerate(dataloader):
         with torch.no_grad():
-            loss, attns = model_fn(batch, model, criterion, device)
+            loss, attns = model_fn(batch, model, 0, criterion, device)
             running_loss += loss.item()
 
         pbar.update(dataloader.batch_size)
@@ -172,6 +182,8 @@ def valid(dataloader, model, criterion, device):
 def main(
     data_dir,
     save_dir,
+    clean_ratio,
+    adv_ratio,
     total_steps,
     warmup_steps,
     valid_steps,
@@ -183,7 +195,6 @@ def main(
     n_workers,
     src_feat,
     ref_feat,
-    preload,
     lr_reduction,
     comment,
 ):
@@ -195,9 +206,6 @@ def main(
 
     feature_extractor = FeatureExtractor(ref_feat, None, device=device)
 
-    # dataset = IntraSpeakerDataset(
-    #     data_dir, metadata_path, src_feat, ref_feat, n_samples, preload
-    # )
     trainset = IntraSpeakerDataset(
         "train",
         train_valid_test["train"],
@@ -206,7 +214,7 @@ def main(
         src_feat,
         ref_feat,
         n_samples,
-        preload,
+        clean_wav_ratio=clean_ratio,
     )
 
     validset = IntraSpeakerDataset(
@@ -217,13 +225,8 @@ def main(
         src_feat,
         ref_feat,
         n_samples,
-        preload,
+        clean_wav_ratio=clean_ratio,
     )
-
-    # input_dim, ref_dim, tgt_dim = trainset.get_feat_dim()
-    # lengths = [trainlen := int(0.9 * len(dataset)), len(dataset) - trainlen]
-    # trainset, validset = random_split(dataset, lengths)
-    # print(f"Input dim: {input_dim}, Reference dim: {ref_dim}, Target dim: {tgt_dim}")
 
     train_loader = DataLoader(
         trainset,
@@ -234,6 +237,7 @@ def main(
         pin_memory=True,
         collate_fn=collate_batch,
     )
+
     valid_loader = DataLoader(
         validset,
         batch_size=batch_size * accu_steps,
@@ -271,10 +275,6 @@ def main(
     pbar = tqdm(total=valid_steps, ncols=0, desc="Train", unit=" step")
 
     for step in range(total_steps):
-        # if step == 40002:
-        #     file = open("completed.txt", "a")
-        #     print(f"{comment} completed", file=file)
-        #     break
         batch_loss = 0.0
 
         for _ in range(accu_steps):
@@ -284,7 +284,9 @@ def main(
                 train_iterator = iter(train_loader)
                 batch = next(train_iterator)
 
-            loss, attns = model_fn(batch, model, criterion, feature_extractor, device)
+            loss, attns = model_fn(
+                batch, model, adv_ratio, criterion, feature_extractor, device
+            )
             loss = loss / accu_steps
             batch_loss += loss.item()
             loss.backward()

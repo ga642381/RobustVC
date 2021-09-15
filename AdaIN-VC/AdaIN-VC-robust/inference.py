@@ -17,7 +17,7 @@ def main(
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = torch.jit.load(model_path).to(device)
     vocoder = torch.jit.load(vocoder_path).to(device)
-    wav2mel = Wav2Mel()
+    wav2mel = Wav2Mel(sox_effect=True)
 
     src, src_sr = torchaudio.load(source)
     tgt, tgt_sr = torchaudio.load(target)

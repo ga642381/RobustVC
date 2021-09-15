@@ -1,31 +1,34 @@
 #!/usr/bin/env python3
 """Precompute Wav2Vec features."""
 
-import os
 import json
-from pathlib import Path
-from tempfile import mkstemp
-from multiprocessing import cpu_count
-
-import tqdm
-import torch
-from torch.utils.data import DataLoader
+import os
 from argparse import ArgumentParser
 from copy import deepcopy
+from multiprocessing import cpu_count
+from pathlib import Path
+from tempfile import mkstemp
 
-from models import load_pretrained_wav2vec
+import torch
+import tqdm
+from torch.utils.data import DataLoader
+
 from data import PreprocessDataset
 from data.feature_extract import FeatureExtractor
+from models import load_pretrained_wav2vec
 
 
 def parse_args():
     """Parse command-line arguments."""
     parser = ArgumentParser()
-    parser.add_argument("data_dirs", type=str, nargs="+")
+    parser.add_argument("clean_data_dir", type=str)
+    parser.add_argument("noisy_data_dir", type=str)
     parser.add_argument("feature_name", type=str)
-    parser.add_argument("out_dir", type=str)
+    parser.add_argument("save_dir", type=str)
     parser.add_argument("--wav2vec_path", type=str, default=None)
-    parser.add_argument("--trim_method", choices=["librosa", "vad"], default="vad")
+    parser.add_argument(
+        "--trim_method", choices=["librosa", "vad", "None"], default="None"
+    )
     parser.add_argument("--n_workers", type=int, default=cpu_count())
     parser.add_argument("--sample_rate", type=int, default=16000)
 
@@ -33,29 +36,36 @@ def parse_args():
 
 
 def main(
-    data_dirs,
+    clean_data_dir,
+    noisy_data_dir,
     feature_name,
     wav2vec_path,
-    out_dir,
+    save_dir,
     trim_method,
     n_workers,
     sample_rate,
     **kwargs,
 ):
     """Main function."""
-
-    # === output path === #
-    out_dir_path = Path(out_dir)
-
-    if out_dir_path.exists():
-        assert out_dir_path.is_dir()
-    else:
-        out_dir_path.mkdir(parents=True)
-
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    # === output path === #
+    # dirs
+    clean_data_dir = Path(clean_data_dir)
+    noisy_data_dir = Path(noisy_data_dir)
+    save_dir = Path(save_dir)
+    assert clean_data_dir.exists(), f"{clean_data_dir} does not exist!"
+    assert noisy_data_dir.exists(), f"{noisy_data_dir} does not exist!"
+    save_dir.mkdir(parents=True, exist_ok=True)
+    print(f"[INFO] Task : Preprocessing for S2VC training")
+    print(f"[INFO] clean_data_dir : {clean_data_dir}")
+    print(f"[INFO] noisy_data_dir : {noisy_data_dir}")
+    print(f"[INFO] save_dir : {save_dir}")
+
     # === dataset === #
-    dataset = PreprocessDataset(data_dirs, trim_method, sample_rate)
+    dataset = PreprocessDataset(
+        clean_data_dir, noisy_data_dir, trim_method, sample_rate
+    )
     dataloader = DataLoader(
         dataset, batch_size=1, shuffle=False, drop_last=False, num_workers=n_workers
     )
@@ -76,23 +86,37 @@ def main(
 
     # === loop dataloader === #
     pbar = tqdm.tqdm(total=len(dataset), ncols=0)
-    for speaker_name, audio_path, wav in dataloader:
-        if wav.size(-1) < 10:
+    for (
+        speaker_name,
+        clean_audio_path,
+        noisy_audio_path,
+        clean_wav,
+        noisy_wav,
+    ) in dataloader:
+
+        if clean_wav.size(-1) < 10:
             continue
 
-        wav = wav.to(device)
+        if noisy_wav.size(-1) < 10:
+            continue
+
         speaker_name = speaker_name[0]
-        audio_path = audio_path[0]
+        clean_audio_path = clean_audio_path[0]
+        noisy_audio_path = noisy_audio_path[0]
+        clean_wav = clean_wav.to(device)
+        noisy_wav = noisy_wav.to(device)
 
         with torch.no_grad():
-            feat = feat_extractor.get_feature(wav)[0]
-            mel = mel_extractor.get_feature(wav)[0]
-        fd, temp_file = mkstemp(suffix=".tar", prefix="utterance-", dir=out_dir_path)
+            clean_mel = mel_extractor.get_feature(clean_wav)[0]
+
+        fd, temp_file = mkstemp(suffix=".tar", prefix="utterance-", dir=save_dir)
+
+        # === save wav tensor === #
         torch.save(
             {
-                "feat": feat.detach().cpu(),
-                "wav": wav.detach().cpu(),
-                "mel": mel.detach().cpu(),
+                "clean_wav": clean_wav.detach().cpu(),
+                "noisy_wav": noisy_wav.detach().cpu(),
+                "clean_mel": clean_mel.detach().cpu(),
             },
             temp_file,
         )
@@ -104,15 +128,16 @@ def main(
         speaker_infos[speaker_name].append(
             {
                 "feature_path": Path(temp_file).name,
-                "audio_path": audio_path,
-                "mel_len": len(mel),
+                "clean_audio_path": clean_audio_path,
+                "noisy_audio_path": noisy_audio_path,
+                "mel_len": len(clean_mel),
             }
         )
 
         pbar.update(dataloader.batch_size)
 
     # === metadata === #
-    with open(out_dir_path / "metadata.json", "w") as f:
+    with open(save_dir / "metadata.json", "w") as f:
         json.dump(speaker_infos, f, indent=2)
 
 

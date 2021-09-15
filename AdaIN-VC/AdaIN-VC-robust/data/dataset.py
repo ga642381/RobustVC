@@ -2,9 +2,10 @@ import json
 import os
 import random
 
-import torch
 import augment
+import torch
 from torch.utils.data import Dataset
+
 from data.noise import WavAug
 from data.wav2mel import Wav2Mel
 
@@ -18,6 +19,7 @@ class SpeakerDataset(Dataset):
         sample_rate: int = 16000,
         segment: int = 25600,
         n_uttrs: int = 4,
+        clean_wav_ratio=0.4,
     ):
         self.split_type = split_type
         self.split_spks = split_spks
@@ -28,8 +30,15 @@ class SpeakerDataset(Dataset):
         self.sample_rate = sample_rate
         self.segment = segment
         self.n_uttrs = n_uttrs
-        self.wav2mel = Wav2Mel()
-        self.wavaug = WavAug(sample_rate=sample_rate)
+        self.clean_wav_ratio = clean_wav_ratio
+        # self.wav2mel = Wav2Mel()
+        self.wavaug = WavAug(
+            sample_rate=sample_rate,
+            p_clean=0,
+            p_add=0,
+            p_reverb=0.5,
+            p_band=0.5,
+        )
 
     def __len__(self):
         return len(self.split_spks)
@@ -41,29 +50,41 @@ class SpeakerDataset(Dataset):
 
         # read wavs
         wav_files = random.sample(self.meta_data[spk], k=self.n_uttrs)
-        wavs = [torch.load(os.path.join(self.data_dir, file)) for file in wav_files]
+        clean_wavs = []
+        noisy_wavs = []
+        for wav_file in wav_files:
+            # clean
+            clean_wav = torch.load(os.path.join(self.data_dir, wav_file["clean"]))
+            clean_wavs.append(clean_wav)
 
-        # add noise
-        aug_wavs = [self.wavaug.add_noise(w) for w in wavs]
+            # noisy : 40% clean, 60% aug
+            if random.random() < self.clean_wav_ratio:
+                noisy_wavs.append(clean_wav)
+            else:
+                noisy_wav = torch.load(os.path.join(self.data_dir, wav_file["noisy"]))
+                aug_noisy_wav = self.wavaug.add_noise(noisy_wav)
+                noisy_wavs.append(aug_noisy_wav)
 
+        assert len(clean_wavs) == len(noisy_wavs)
         # crop wavs
-        starts = [random.randint(0, w.shape[-1] - self.segment) for w in wavs]
-        clean_wavs = torch.stack(
+        starts = [random.randint(0, w.shape[-1] - self.segment) for w in clean_wavs]
+
+        clean_wav_segs = torch.stack(
             [
                 w[:, start : (start + self.segment - 1)]
-                for (w, start) in zip(wavs, starts)
-            ]
-        ).squeeze(1)
-        noisy_wavs = torch.stack(
-            [
-                w[:, start : (start + self.segment - 1)]
-                for (w, start) in zip(aug_wavs, starts)
+                for (w, start) in zip(clean_wavs, starts)
             ]
         ).squeeze(1)
 
+        noisy_wav_segs = torch.stack(
+            [
+                w[:, start : (start + self.segment - 1)]
+                for (w, start) in zip(noisy_wavs, starts)
+            ]
+        ).squeeze(1)
+
+        # return
         return (
-            self.wav2mel.mel(clean_wavs),
-            self.wav2mel.mel(noisy_wavs),
-            clean_wavs,
-            noisy_wavs,
+            clean_wav_segs,
+            noisy_wav_segs,
         )

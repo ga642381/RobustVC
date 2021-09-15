@@ -1,5 +1,6 @@
 import argparse
 import os
+import random
 
 import torch
 import torch.nn as nn
@@ -26,15 +27,16 @@ def emb_attack(
 ):
     ptb = torch.empty_like(x).uniform_(-eps, eps).requires_grad_(True)
     with torch.no_grad():
-        org_emb = model.speaker_encoder(wav2mel.forward_batch(x))
+        org_emb = model.speaker_encoder(wav2mel.mel(x))
         tgt_emb = org_emb.roll(n_uttrs, 0)
-    adv_emb = model.speaker_encoder(wav2mel.forward_batch(x + ptb))
+    adv_emb = model.speaker_encoder(wav2mel.mel(x + ptb))
     loss = F.mse_loss(adv_emb, tgt_emb) - 0.1 * F.mse_loss(adv_emb, org_emb)
     loss.backward()
     grad = ptb.grad.data
     ptb = ptb.data - alpha * grad.sign()
-    adv_x = x + torch.max(torch.min(ptb, eps), -eps)
-    return wav2mel.forward_batch(adv_x.detach())
+    adv_x = x + torch.clamp(ptb, min=-eps, max=eps)
+    # adv_x = x + torch.max(torch.min(ptb, eps), -eps)
+    return wav2mel.mel(adv_x.detach())
 
 
 def main(
@@ -46,6 +48,8 @@ def main(
     log_steps: int,
     n_spks: int,
     n_uttrs: int,
+    clean_ratio: float,
+    adv_ratio: float,
 ):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     torch.backends.cudnn.benchmark = True
@@ -55,21 +59,29 @@ def main(
 
     # Prepare data
     train_set = SpeakerDataset(
-        "train", train_valid_test["train"], data_dir, sample_rate=16000
+        "train",
+        train_valid_test["train"],
+        data_dir,
+        sample_rate=16000,
+        clean_wav_ratio=clean_ratio,
     )
     valid_set = SpeakerDataset(
-        "valid", train_valid_test["valid"], data_dir, sample_rate=16000
+        "valid",
+        train_valid_test["valid"],
+        data_dir,
+        sample_rate=16000,
+        clean_wav_ratio=clean_ratio,
     )
 
-    print(f"train_set spks : {len(train_set)}")
-    print(f"valid_set spks : {len(valid_set)}")
+    print(f"[INFO] train_set spks : {len(train_set)}")
+    print(f"[INFO] valid_set spks : {len(valid_set)}")
 
     # construct loader
     train_loader = InfiniteDataLoader(
-        train_set, batch_size=n_spks, shuffle=True, num_workers=8,
+        train_set, batch_size=n_spks, shuffle=True, num_workers=10
     )
     valid_loader = InfiniteDataLoader(
-        valid_set, batch_size=n_spks, shuffle=True, num_workers=8,
+        valid_set, batch_size=n_spks, shuffle=True, num_workers=10
     )
 
     # construct iterator
@@ -77,6 +89,7 @@ def main(
     valid_iter = infinite_iterator(valid_loader)
 
     # Build model
+    wav2mel = Wav2Mel(sox_effect=False).to(device)
     model = AdaINVC(config["Model"]).to(device)
     model = torch.jit.script(model)
 
@@ -97,17 +110,16 @@ def main(
 
     for step in pbar:
         # get features
-        clean_mels, noisy_mels, _, noisy_wavs = next(train_iter)
-        clean_mels = clean_mels.flatten(0, 1)
-        noisy_mels = noisy_mels.flatten(0, 1)
-        clean_mels = clean_mels.to(device)
-        if True:
-            noisy_mels = noisy_mels.to(device)
+        clean_wavs, noisy_wavs = next(train_iter)
+        clean_wavs = clean_wavs.flatten(0, 1).to(device)
+        noisy_wavs = noisy_wavs.flatten(0, 1).to(device)
+
+        clean_mels = wav2mel.mel(clean_wavs)
+
+        if random.random() < adv_ratio:
+            noisy_mels = emb_attack(model, noisy_wavs, wav2mel, n_uttrs=n_uttrs)
         else:
-            noisy_wavs = noisy_wavs.to(device)
-            noisy_mels = emb_attack(
-                model, noisy_wavs, train_set.wav2mel, n_uttrs=n_uttrs
-            )
+            noisy_mels = wav2mel.mel(noisy_wavs)
 
         # reconstruction
         mu, log_sigma, emb, rec_mels = model(noisy_mels)
@@ -137,19 +149,23 @@ def main(
             opt_path = os.path.join(save_dir, f"opt-{step + 1}.ckpt")
             torch.save(opt.state_dict(), opt_path)
 
+        # validation
         if (step + 1) % log_steps == 0:
-            # validation
             model.eval()
             valid_loss = 0
             for _ in range(valid_steps):
-                clean_mels, noisy_mels = next(valid_iter)
-                clean_mels = clean_mels.flatten(0, 1)
-                noisy_mels = noisy_mels.flatten(0, 1)
-                clean_mels = clean_mels.to(device)
-                noisy_mels = noisy_mels.to(device)
+                clean_wavs, noisy_wavs = next(valid_iter)
+                clean_wavs = clean_wavs.flatten(0, 1).to(device)
+                noisy_wavs = noisy_wavs.flatten(0, 1).to(device)
+
+                clean_mels = wav2mel.mel(clean_wavs)
+                noisy_mels = wav2mel.mel(noisy_wavs)
+
                 mu, log_sigma, emb, rec_mels = model(noisy_mels)
+
                 loss = criterion(rec_mels, clean_mels)
                 valid_loss += loss.item()
+
             valid_loss /= valid_steps
             model.train()
 
@@ -174,4 +190,6 @@ if __name__ == "__main__":
     parser.add_argument("--log_steps", type=int, default=250)
     parser.add_argument("--n_spks", type=int, default=32)
     parser.add_argument("--n_uttrs", type=int, default=4)
+    parser.add_argument("--clean_ratio", type=float, default=0.4)
+    parser.add_argument("--adv_ratio", type=float, default=0.5)
     main(**vars(parser.parse_args()))
