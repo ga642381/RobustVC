@@ -16,7 +16,6 @@ from torch.nn import (
     Sigmoid,
     InstanceNorm1d,
 )
-from torch.nn.modules.linear import _LinearWithBias
 
 
 class Smoother(Module):
@@ -76,7 +75,7 @@ class Extractor(Module):
         super(Extractor, self).__init__()
         self.self_attn = MultiheadAttention(d_model, nhead, dropout=dropout)
         self.cross_attn = MultiheadAttention(bottleneck_dim, nhead, dropout=dropout)
-        self.out_proj = _LinearWithBias(d_model, d_model)
+        self.out_proj = Linear(d_model, d_model)
 
         self.conv1 = Conv1d(d_model, d_hid, 9, padding=4)
         self.conv2 = Conv1d(d_hid, d_model, 1, padding=0)

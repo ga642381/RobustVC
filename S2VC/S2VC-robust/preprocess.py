@@ -103,8 +103,8 @@ def main(
         speaker_name = speaker_name[0]
         clean_audio_path = clean_audio_path[0]
         noisy_audio_path = noisy_audio_path[0]
-        clean_wav = clean_wav.to(device)
-        noisy_wav = noisy_wav.to(device)
+        clean_wav = clean_wav.to(device)  # (batch(1), length)
+        noisy_wav = noisy_wav.to(device)  # (batch(1), length)
 
         with torch.no_grad():
             clean_mel = mel_extractor.get_feature(clean_wav)[0]

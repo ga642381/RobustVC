@@ -9,6 +9,7 @@ from pathlib import Path
 import torch
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset
+
 # from torch._C import device
 from tqdm import tqdm
 
@@ -133,27 +134,27 @@ class IntraSpeakerDataset(Dataset):
                 source_wav = source_noisy_wav  # demand
                 source_wav = self.wavaug.add_noise(source_wav)
 
-            # source_emb = (
-            #     self.src_feat_extractor.get_feature([source_wav.squeeze(0)])[0]
-            #     .detach()
-            #     .cpu()
-            # )
+            source_wav = source_wav.squeeze(0)  # shape : (Length,)
+            source_emb = (
+                self.src_feat_extractor.get_feature([source_wav])[0].detach().cpu()
+            )
+
             target_wav = source_wav
-            # target_emb = source_emb
+            target_emb = source_emb
         else:
             raise NotImplementedError(
                 "not implemented different features, pls check github history before 20210915, it's easy"
             )
 
         # set shapes
-        # self.src_dim = source_emb.shape[1]
-        # self.ref_dim = target_emb.shape[1]
         self.src_dim = 256
         self.ref_dim = 256
         self.tgt_dim = ground_mel.shape[1]
 
         return (
             speaker_name,
+            source_emb,
+            target_emb,
             ground_mel,
             source_wav,  # for training : (clean + demand + aug)
             target_wav,  # for training : (clean + demand + aug)
@@ -207,6 +208,12 @@ def collate_batch(batch):
     tgt_mels      : (batch, mel_dim, max_tgt_mel_len)
     overlap_lens  : list, len == batch_size 
     """
+    # speaker_name,
+    # source_emb,
+    # target_emb,
+    # ground_mel,
+    # source_wav,
+    # target_wav,
     spks, srcs, tgts, tgt_mels, src_wavs, tgt_wavs = zip(*batch)
 
     src_lens = [len(src) for src in srcs]

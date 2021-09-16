@@ -12,12 +12,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
+from torch.nn.utils.rnn import pad_sequence
 from torch.optim import AdamW
 from torch.utils.data import DataLoader, random_split
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
-from data import IntraSpeakerDataset, collate_batch, plot_attn, train_valid_test
+from data import (IntraSpeakerDataset, collate_batch, plot_attn,
+                  train_valid_test)
 from data.feature_extract import FeatureExtractor
 from models import S2VC, get_cosine_schedule_with_warmup
 
@@ -34,10 +36,10 @@ def parse_args():
     parser.add_argument("data_dir", type=str)
     parser.add_argument("--save_dir", type=str, default=".")
     parser.add_argument("--clean_ratio", type=float, default=0.4)  #
-    parser.add_argument("--adv_ratio", type=float, default=0.5)  #
-    parser.add_argument("--total_steps", type=int, default=250000)
+    parser.add_argument("--adv_ratio", type=float, default=1)  #
+    parser.add_argument("--total_steps", type=int, default=1000000)
     parser.add_argument("--warmup_steps", type=int, default=100)
-    parser.add_argument("--valid_steps", type=int, default=1000)
+    parser.add_argument("--valid_steps", type=int, default=5000)
     parser.add_argument("--log_steps", type=int, default=100)
     parser.add_argument("--save_steps", type=int, default=10000)
     parser.add_argument("--n_samples", type=int, default=10)
@@ -53,14 +55,21 @@ def parse_args():
 
 
 def extract_ref_feats(model: nn.Module, refs: Tensor, masks: Tensor):
+    """
+    refs shape : [6, 256, 557]
+    masks shape: [6, 557]
+    ---
+    ref3 shape : [6, 512, 557]
+    lens shape : [6] (tensor([235, 129,  89, 189, 471, 557], device='cuda:0'))
+    """
     ref1 = model.unet.conv1(refs)
     ref2 = model.unet.conv2(F.relu(ref1))
     ref3 = model.unet.conv3(F.relu(ref2))
     cum_sum = ref3.cumsum(dim=-1)
-    lens = masks.sum(dim=-1)
+    lens = (~masks).sum(dim=-1)
     assert lens.ndim == 1
-    cum_sum = cum_sum.index_select(-1, lens.int()).squeeze(-1)
-    spk_emb = cum_sum / lens[:, None]
+    tmp = torch.stack([cum_sum[i, :, lens[i] - 1] for i in range(len(cum_sum))])
+    spk_emb = tmp / lens[:, None]
     return spk_emb
 
 
@@ -93,8 +102,17 @@ def emb_attack(
     eps=0.05,
     alpha=0.001,
 ):
-    ptb = torch.empty_like(tgt_wavs).uniform_(-eps, eps).requires_grad_(True)
-    ptb_feats = feat_extractor.get_feature(tgts + ptb)[0]
+    feat_extractor.extractor.train()
+    # ptb = torch.empty_like(tgt_wavs).uniform_(-eps, eps).requires_grad_(True)
+    ptbs = [
+        torch.empty_like(tgt_wav).uniform_(-eps, eps).requires_grad_(True)
+        for tgt_wav in tgt_wavs
+    ]
+    atk_tgt_wavs = [tgt_wav + ptb for tgt_wav, ptb in zip(tgt_wavs, ptbs)]
+    ptb_feats = feat_extractor.get_feature(atk_tgt_wavs)
+
+    ptb_feats = pad_sequence(ptb_feats, batch_first=True).transpose(1, 2)
+
     with torch.no_grad():
         org_emb = extract_ref_feats(model, tgts, masks)
         # perform some roll
@@ -103,15 +121,20 @@ def emb_attack(
     adv_emb = extract_ref_feats(model, ptb_feats, masks)
     loss = F.mse_loss(adv_emb, tgt_emb) - 0.1 * F.mse_loss(adv_emb, org_emb)
     loss.backward()
-    grad = ptb.grad.data
-    ptb = ptb.data - alpha * grad.sign()
+
+    ptbs = [ptb.data - alpha * ptb.grad.data.sign() for ptb in ptbs]
     with torch.no_grad():
-        adv_wavs = tgt_wavs + torch.max(torch.min(ptb, eps), -eps)
-        adv_feats = feat_extractor.get_feature(adv_wavs)[0]
+        adv_wavs = [
+            tgt_wav + torch.clamp(ptb, min=-eps, max=eps)
+            for tgt_wav, ptb in zip(tgt_wavs, ptbs)
+        ]
+        adv_feats = feat_extractor.get_feature(adv_wavs)
+        adv_feats = pad_sequence(adv_feats, batch_first=True).transpose(1, 2)
+    feat_extractor.extractor.eval()
     return adv_feats
 
 
-def model_fn(batch, model, adv_ratio, criterion, feat_extractor, device):
+def model_fn(batch, model, adv_ratio, criterion, device, feat_extractor=None):
     """Forward a batch through model."""
 
     (
@@ -119,7 +142,7 @@ def model_fn(batch, model, adv_ratio, criterion, feat_extractor, device):
         src_masks,
         tgts,
         tgt_masks,
-        tgt_mels,
+        tgt_mels,  # ground mels
         overlap_lens,
         src_wavs,  #!
         tgt_wavs,  #!
@@ -136,7 +159,8 @@ def model_fn(batch, model, adv_ratio, criterion, feat_extractor, device):
     ref_masks = tgt_masks
 
     if random.random() < adv_ratio:
-        tgt_wavs = tgt_wavs.to(device)
+        # tgt_wavs = tgt_wavs.to(device)
+        tgt_wavs = [tgt_wav.to(device) for tgt_wav in tgt_wavs]
         advs = emb_attack(model, feat_extractor, tgts, tgt_wavs, tgt_masks, spks)
         outs, attns = model(srcs, advs, src_masks=src_masks, ref_masks=ref_masks)
     else:
@@ -167,7 +191,7 @@ def valid(dataloader, model, criterion, device):
 
     for i, batch in enumerate(dataloader):
         with torch.no_grad():
-            loss, attns = model_fn(batch, model, 0, criterion, device)
+            loss, attns = model_fn(batch, model, 0, criterion, device, None)
             running_loss += loss.item()
 
         pbar.update(dataloader.batch_size)
@@ -203,9 +227,7 @@ def main(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     metadata_path = Path(data_dir) / "metadata.json"
-
-    feature_extractor = FeatureExtractor(ref_feat, None, device=device)
-
+    # === dataset === #
     trainset = IntraSpeakerDataset(
         "train",
         train_valid_test["train"],
@@ -250,11 +272,14 @@ def main(
     )
     train_iterator = iter(train_loader)
 
+    # === model === #
     input_dim = 256
     ref_dim = 256
     model = S2VC(input_dim, ref_dim).to(device)
     model = torch.jit.script(model)
+    feature_extractor = FeatureExtractor(ref_feat, None, device=device)
 
+    # === log === #
     if comment is not None:
         log_dir = "logs/"
         log_dir += datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
@@ -264,6 +289,7 @@ def main(
     save_dir_path = Path(save_dir)
     save_dir_path.mkdir(parents=True, exist_ok=True)
 
+    # === hparams === #
     learning_rate = 5e-5
     criterion = nn.L1Loss()
     optimizer = AdamW(model.parameters(), lr=learning_rate)
@@ -285,7 +311,7 @@ def main(
                 batch = next(train_iterator)
 
             loss, attns = model_fn(
-                batch, model, adv_ratio, criterion, feature_extractor, device
+                batch, model, adv_ratio, criterion, device, feature_extractor
             )
             loss = loss / accu_steps
             batch_loss += loss.item()
