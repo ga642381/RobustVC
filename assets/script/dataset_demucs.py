@@ -1,11 +1,14 @@
 import argparse
+import os
+import shutil
+from pathlib import Path
 from random import sample
+
 import librosa
 import torchaudio
 from tqdm import tqdm
-from pathlib import Path
-import os
-import shutil
+
+os.environ["MKL_THREADING_LAYER"] = "GNU"
 
 
 def parse_args():

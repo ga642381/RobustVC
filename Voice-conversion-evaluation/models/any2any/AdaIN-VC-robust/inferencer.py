@@ -1,12 +1,13 @@
 """Inferencer of AdaIN-VC"""
-from typing import List
 from pathlib import Path
-import yaml
+from typing import List
+
 import joblib
 import numpy as np
 import torch
 import torch.nn.functional as F
 import torchaudio
+import yaml
 from torch import Tensor
 
 from .wav2mel import Wav2Mel
@@ -43,8 +44,8 @@ class Inferencer:
         src, src_sr = torchaudio.load(source_utt)
         tgt, tgt_sr = torchaudio.load(target_utt)
 
-        src = self.wav2mel.mel(src, src_sr)
-        tgt = self.wav2mel.mel(tgt, tgt_sr)
+        src = self.wav2mel.mel(src)
+        tgt = self.wav2mel.mel(tgt)
         if tgt is None or src is None:
             return None
 

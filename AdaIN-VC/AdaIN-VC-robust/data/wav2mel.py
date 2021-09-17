@@ -10,7 +10,7 @@ class Wav2Mel(torch.nn.Module):
 
     def __init__(
         self,
-        sox_effect: bool,
+        sox_effect: bool = True,
         sample_rate: float = 16000,
         norm_db: float = -3.0,
         fft_window_ms: float = 50.0,

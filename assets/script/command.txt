@@ -12,6 +12,12 @@ python dataset_metricgan.py ../vctk_test_noisy ../vctk_test_metricgan
 
 python dataset_demand.py ../vctk_test_clean /fortress/dataset/vc2021/demand ../vctk_test_demand 
 
+python dataset_demucs.py ../vctk_test_demand  ../vctk_test_demand_demucs
+
+python dataset_metricgan.py ../vctk_test_demand ../vctk_test_demand_metricgan
+
+python dataset_noise.py --p_clean 0 --p_reverb 1 --p_band 1 ../vctk_test_demand ../vctk_test_demand_reverb_band
+
 // training dataset
 
 python dataset_resample_vad.py /fortress/dataset/VCTK-Corpus /fortress/dataset/vc2021/vctk_all_vad --out_sample_rate 16000

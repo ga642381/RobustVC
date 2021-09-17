@@ -18,8 +18,7 @@ from torch.utils.data import DataLoader, random_split
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
-from data import (IntraSpeakerDataset, collate_batch, plot_attn,
-                  train_valid_test)
+from data import IntraSpeakerDataset, collate_batch, plot_attn, train_valid_test
 from data.feature_extract import FeatureExtractor
 from models import S2VC, get_cosine_schedule_with_warmup
 
@@ -36,7 +35,7 @@ def parse_args():
     parser.add_argument("data_dir", type=str)
     parser.add_argument("--save_dir", type=str, default=".")
     parser.add_argument("--clean_ratio", type=float, default=0.4)  #
-    parser.add_argument("--adv_ratio", type=float, default=1)  #
+    parser.add_argument("--adv_ratio", type=float, default=0.5)  #
     parser.add_argument("--total_steps", type=int, default=1000000)
     parser.add_argument("--warmup_steps", type=int, default=100)
     parser.add_argument("--valid_steps", type=int, default=5000)

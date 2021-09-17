@@ -58,3 +58,11 @@ python calculate_objective_metric.py -d ./result/demucs_data/AdaIN-VC/VCTK2VCTK/
 python calculate_objective_metric.py -d ./result/clean_data/S2VC/VCTK2VCTK/ -r metrics/character_error_rate -o ./result/clean_data/S2VC
 python calculate_objective_metric.py -d ./result/noisy_data/S2VC/VCTK2VCTK/ -r metrics/character_error_rate -o ./result/noisy_data/S2VC
 python calculate_objective_metric.py -d ./result/demucs_data/S2VC/VCTK2VCTK/ -r metrics/character_error_rate -o ./result/demucs_data/S2VC
+
+
+#=====
+python vc_eval.py inference --dataset vad demand demand_demucs demand_metricgan --model AdaIN-VC 
+python vc_eval.py inference --dataset vad demand --model AdaIN-VC-robust
+
+python vc_eval.py metric --metric MOS --dataset vad demand --model AdaIN-VC-robust
+python vc_eval.py metric --metric MOS --dataset vad demand demand_demucs demand_metricgan --model AdaIN-VC

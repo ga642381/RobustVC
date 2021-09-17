@@ -1,20 +1,25 @@
 import argparse
+import os
+from functools import partial
+from multiprocessing import Pool, cpu_count
+from pathlib import Path
 from random import sample
+
 import librosa
 import torch
 import torchaudio
 from tqdm import tqdm
+
 from utils.noise import WavAug
-from pathlib import Path
-import os
-from functools import partial
-from multiprocessing import Pool, cpu_count
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("data_dir", type=str)
     parser.add_argument("save_dir", type=str)
+    parser.add_argument("--p_clean", type=float)
+    parser.add_argument("--p_reverb", type=float)
+    parser.add_argument("--p_band", type=float)
     parser.add_argument("--out_sample_rate", type=int, default=16000)
     return vars(parser.parse_args())
 
@@ -31,7 +36,7 @@ def process_save_wav(wav_file, processor, data_dir, save_dir, sr):
     torchaudio.save(output_path, noisy_wav, sample_rate=sr)
 
 
-def main(data_dir, save_dir, out_sample_rate):
+def main(data_dir, save_dir, p_clean, p_reverb, p_band, out_sample_rate):
     # dir
     data_dir = Path(data_dir).resolve()
     save_dir = Path(save_dir).resolve()
@@ -47,7 +52,13 @@ def main(data_dir, save_dir, out_sample_rate):
     print(f"[INFO] {len(wav_files)} wav files found in {data_dir}")
 
     # add noise with multiporcessing
-    wavaug = WavAug(sample_rate=out_sample_rate, mode="test")
+    wavaug = WavAug(
+        sample_rate=out_sample_rate,
+        p_clean=p_clean,
+        p_reverb=p_reverb,
+        p_band=p_band,
+        mode="test",
+    )
     file_to_noisy_file = partial(
         process_save_wav,
         processor=wavaug,
