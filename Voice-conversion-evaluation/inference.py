@@ -1,15 +1,14 @@
 """Inference one utterance."""
-import warnings
-import json
-from pathlib import Path
 import importlib
-from argparse import ArgumentParser
-from tqdm import tqdm
-import soundfile as sf
+import json
 import logging
+import warnings
+from argparse import ArgumentParser
+from pathlib import Path
 
+import soundfile as sf
 import torch
-
+from tqdm import tqdm
 
 logging.basicConfig(
     level=logging.INFO, format="[%(levelname)s] %(asctime)-s %(name)s: %(message)s"
@@ -32,6 +31,8 @@ def parse_args():
     )
     parser.add_argument("--reload", action="store_true")
     parser.add_argument("--reload_dir", type=str, help="reload dir path")
+    parser.add_argument("--model_name", type=str, default="model.ckpt")
+    parser.add_argument("--vocoder_name", type=str, default="vocoder.pt")
 
     return vars(parser.parse_args())
 
@@ -88,6 +89,8 @@ def main(
     batch_size,
     reload,
     reload_dir,
+    model_name,
+    vocoder_name,
 ):
     """Main function"""
 
@@ -95,7 +98,7 @@ def main(
     inferencer_path = str(Path(root) / "inferencer").replace("/", ".")
     Inferencer = getattr(importlib.import_module(inferencer_path), "Inferencer")
 
-    inferencer = Inferencer(root)
+    inferencer = Inferencer(root, model_name, vocoder_name)
     device = inferencer.device
     sample_rate = inferencer.sample_rate
     logger.info("Inferencer is loaded from %s.", root)

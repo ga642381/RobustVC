@@ -1,4 +1,5 @@
 import argparse
+import csv
 import os
 import random
 from functools import partial
@@ -12,28 +13,11 @@ import torch
 import torchaudio
 from librosa.util import find_files
 from torch import Tensor
+from torchaudio.sox_effects import apply_effects_tensor
 from tqdm import tqdm
 
-NOISE_TYPES = [
-    "PCAFETER",
-    "SPSQUARE",
-    "OMEETING",
-    "TCAR",
-    "PSTATION",
-    "OHALLWAY",
-    "STRAFFIC",
-    "DLIVING",
-    "NFIELD",
-    "NPARK",
-    "TMETRO",
-    "NRIVER",
-    "TBUS",
-    "PRESTO",
-    "OOFFICE",
-    "SCAFE",
-    "DKITCHEN",
-    "DWASHING",
-]
+SNR = [2.5, 7.5, 12.5, 17.5]
+CHANNELS = [1, 2]
 
 
 def mix_noise(speech_tensor: Tensor, noise_tensor: Tensor, snr_val: float):
@@ -54,17 +38,23 @@ def mix_noise(speech_tensor: Tensor, noise_tensor: Tensor, snr_val: float):
     return (speech_tensor + scalar * noise_tensor).unsqueeze(0)
 
 
-def process_save_wav(wav_file, processor, data_dir, noise_dir, save_dir, SNR):
+def process_save_wav(wav_file, processor, data_dir, noise_files: list, save_dir):
     # wav
     wav_tensor, sr1 = torchaudio.load(wav_file)
 
     # noise
-    noise_type = random.choice(NOISE_TYPES)
+    # !TODO resampling can be conducted off-line
     snr = random.choice(SNR)
-    noise_subdir = noise_dir / noise_type
-    noise_filename = random.choice(list(noise_subdir.iterdir()))
-    noise_tensor, sr2 = torchaudio.load(noise_subdir / noise_filename)
-    assert sr1 == sr2, "input wav and DEMAND should have the same sampling rate"
+    channel = random.choice(CHANNELS)
+    noise_filename = random.choice(noise_files)
+    noise_tensor, sr2 = torchaudio.load(noise_filename)
+    assert sr2 == 48000
+    assert sr1 == 16000
+    effects = [["rate", str(sr1)], ["remix", str(channel)]]
+    noise_tensor, sr2_ = apply_effects_tensor(
+        noise_tensor, sr2, effects, channels_first=True
+    )
+    assert sr1 == sr2_, "input wav and DEMAND should have the same sampling rate"
 
     # add noise
     noisy_wav = processor(wav_tensor, noise_tensor, snr)
@@ -75,7 +65,7 @@ def process_save_wav(wav_file, processor, data_dir, noise_dir, save_dir, SNR):
     torchaudio.save(output_path, noisy_wav, sample_rate=sr1)
 
 
-def main(data_dir, noise_dir, save_dir, mode):
+def main(data_dir, noise_dir, save_dir):
     # dir
     data_dir = Path(data_dir).resolve()
     noise_dir = Path(noise_dir).resolve()
@@ -83,7 +73,7 @@ def main(data_dir, noise_dir, save_dir, mode):
     assert data_dir != save_dir, f"data_dir and save_dir should not be the same!"
     assert data_dir.exists(), f"{data_dir} does not exist!"
     assert noise_dir.exists(), f"{noise_dir} does not exist!"
-    print(f"[INFO] Task : Adding Noise from Noise Dataset DEMAND")
+    print(f"[INFO] Task : Adding Noise from Noise Dataset WHAM!")
     print(f"[INFO] data_dir : {data_dir}")
     print(f"[INFO] noise_dir : {noise_dir}")
     print(f"[INFO] save_dir : {save_dir}")
@@ -93,21 +83,24 @@ def main(data_dir, noise_dir, save_dir, mode):
     wav_files = librosa.util.find_files(data_dir)
     print(f"[INFO] {len(wav_files)} wav files found in {data_dir}")
 
-    # SNR
-    if mode == "train":
-        SNR = [0.0, 5.0, 10.0, 15.0]
-    elif mode == "test":
-        SNR = [2.5, 7.5, 12.5, 17.5]
-    print(f"[INFO] SNR sampled from : {SNR}")
+    # find noise wav files
+    noise_files = []
+    metadata = noise_dir / "high_res_metadata.csv"
+    with open(metadata) as f:
+        rows = csv.reader(f)
+        for row in rows:
+            if row[-3] == "Test":
+                noise_files.append(noise_dir / "audio" / row[0])
+
+    print(f"[INFO] {len(wav_files)} Noisy wav files (Test) found in {noise_dir}")
 
     # add noise with multiporcessing
     file_to_noisy_file = partial(
         process_save_wav,
         processor=mix_noise,
         data_dir=data_dir,
-        noise_dir=noise_dir,
+        noise_files=noise_files,
         save_dir=save_dir,
-        SNR=SNR,
     )
     N_processes = cpu_count()
     print(f"[INFO] Start multiprocessing with {N_processes} processes")
@@ -130,5 +123,4 @@ if __name__ == "__main__":
     parser.add_argument("data_dir", type=Path)
     parser.add_argument("noise_dir", type=Path)
     parser.add_argument("save_dir", type=Path)
-    parser.add_argument("--mode", type=str, default="train")
     main(**vars(parser.parse_args()))

@@ -1,6 +1,7 @@
 """Inferencer of FragmentVC"""
-from typing import List, Optional
 from pathlib import Path
+from typing import List, Optional
+
 import numpy as np
 import torch
 from torch import Tensor
@@ -15,12 +16,12 @@ from .utils import load_wav
 class Inferencer:
     """Inferencer"""
 
-    def __init__(self, root):
+    def __init__(self, root, model_name="model.ckpt", vocoder_name="vocoder.pt"):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         checkpoint_dir = Path(root) / "checkpoints"
         # wav2vec_path = checkpoint_dir / "wav2vec_small.pt"
-        ckpt_path = checkpoint_dir / "model.ckpt"
-        vocoder_path = checkpoint_dir / "vocoder.pt"
+        ckpt_path = checkpoint_dir / model_name
+        vocoder_path = checkpoint_dir / vocoder_name
 
         # self.wav2vec = load_pretrained_wav2vec(str(wav2vec_path)).to(device)
         self.model = torch.jit.load(str(ckpt_path)).eval().to(device)

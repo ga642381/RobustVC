@@ -35,7 +35,7 @@ def main(data_dir, save_dir):
     save_dir = Path(save_dir).resolve()
     assert data_dir != save_dir, f"data_dir and save_dir should not be the same!"
     assert data_dir.exists(), f"{data_dir} does not exist!"
-    print(f"[INFO] Task : Denoise with Facebook Demucs")
+    print(f"[INFO] Task : Denoise with MetricGAN+")
     print(f"[INFO] data_dir : {data_dir}")
     print(f"[INFO] save_dir : {save_dir}")
     save_dir.mkdir(parents=True, exist_ok=True)
@@ -53,15 +53,20 @@ def main(data_dir, save_dir):
     )
     print(f"[INFO] MetricGAN+ loaded from speechbrain!")
 
+    temp_dir = metricgan_plus_dir / "wavs"
     file_to_noisy_file = partial(
         process_save_wav,
         processor=enhance_model,
         data_dir=data_dir,
         save_dir=save_dir,
-        tmp_dir=metricgan_plus_dir / "wavs",
+        tmp_dir=temp_dir,
     )
     for wav_path in tqdm(wav_files):
         file_to_noisy_file(wav_path)
+
+    # remove temp wav files
+    shutil.rmtree(temp_dir)
+    print(f"[INFO] Removing temp wav files in {temp_dir}")
 
     # copy text files
     txt_in_dir = data_dir / "txt"

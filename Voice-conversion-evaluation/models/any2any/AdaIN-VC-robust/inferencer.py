@@ -16,14 +16,14 @@ from .wav2mel import Wav2Mel
 class Inferencer:
     """Inferencer"""
 
-    def __init__(self, root):
+    def __init__(self, root, model_name="model.ckpt", vocoder_name="vocoder.pt"):
         checkpoint_dir = Path(root) / "checkpoints"
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.device = device
         config_path = checkpoint_dir / "config.yaml"
-        model_path = checkpoint_dir / "model.ckpt"
-        vocoder_path = checkpoint_dir / "vocoder.pt"
+        model_path = checkpoint_dir / model_name
+        vocoder_path = checkpoint_dir / vocoder_name
         config = yaml.load(config_path.open(), Loader=yaml.FullLoader)
 
         self.model = torch.jit.load(str(model_path)).to(device)
