@@ -1,0 +1,4 @@
+p238_244_p243_347:
+  source: /fortress/vc2021/robust-vc/assets/vctk_test_demand/wav48/p238/p238_244.wav
+  target:
+    - /fortress/vc2021/robust-vc/assets/vctk_test_demand/wav48/p243/p243_347.wav

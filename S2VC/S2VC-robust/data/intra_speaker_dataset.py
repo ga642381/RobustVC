@@ -86,7 +86,9 @@ class IntraSpeakerDataset(Dataset):
         # === add noise === #
         self.src_feat_extractor = FeatureExtractor(src_feat, None, device="cpu")
         self.ref_feat_extractor = FeatureExtractor(ref_feat, None, device="cpu")
-        self.wavaug = WavAug()
+        self.wavaug = WavAug(
+            sample_rate=16000, p_clean=0, p_add=0, p_reverb=0.5, p_band=0.5
+        )
 
     def __len__(self):
         return len(self.data)

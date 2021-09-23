@@ -8,7 +8,13 @@ sample/
 *test*/
 output/
 result/
-exp_record
+*record*/
+*output*/
+*result*/
+*command*.txt
+*pretrained*/
+src/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
