@@ -21,7 +21,7 @@ def inference(args):
     # === #
     for dataset in datasets:
         for model in models:
-            cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -t /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --vocoder_anem {vocoder_name}"
+            cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -t /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --vocoder_name {vocoder_name}"
             print("[Command]", cmd)
             os.system(cmd)
 
@@ -31,7 +31,6 @@ def metric(args):
     datasets = args.dataset
     models = args.model
     model_name = args.model_name
-    vocoder_name = args.vocoder_name
     mapping = {
         "MOS": "mean_opinion_score",
         "CER": "character_error_rate",
@@ -41,21 +40,21 @@ def metric(args):
     if "MOS" in metrics:
         for dataset in datasets:
             for model in models:
-                cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/VCTK2VCTK/ -r metrics/mean_opinion_score -o ./result/{dataset}_data/{model} --model_name {model_name} --vocoder_anem {vocoder_name}"
+                cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/{model_name}/VCTK2VCTK/ -r metrics/mean_opinion_score -o ./result/{dataset}_data/{model}/{model_name}"
                 print("[Command]", cmd)
                 os.system(cmd)
 
     if "CER" in metrics:
         for dataset in datasets:
             for model in models:
-                cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/VCTK2VCTK/ -r metrics/character_error_rate -o ./result/{dataset}_data/{model} --model_name {model_name} --vocoder_anem {vocoder_name}"
+                cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/{model_name}/VCTK2VCTK/ -r metrics/character_error_rate -o ./result/{dataset}_data/{model}/{model_name}"
                 print("[Command]", cmd)
                 os.system(cmd)
 
     if "SVAR" in metrics:
         for dataset in datasets:
             for model in models:
-                cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/VCTK2VCTK/ -r metrics/speaker_verification -o ./result/{dataset}_data/{model} -t /fortress/vc2021/robust-vc/assets/vctk_test_vad --th metrics/speaker_verification/equal_error_rate/VCTK_eer.yaml --model_name {model_name} --vocoder_anem {vocoder_name}"
+                cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/{model_name}/VCTK2VCTK/ -r metrics/speaker_verification -o ./result/{dataset}_data/{model}/{model_name} -t /fortress/vc2021/robust-vc/assets/vctk_test_vad --th metrics/speaker_verification/equal_error_rate/VCTK_eer.yaml"
                 print("[Command]", cmd)
                 os.system(cmd)
 
@@ -82,7 +81,6 @@ if __name__ == "__main__":
     parser_metric.add_argument("--dataset", nargs="+")
     parser_metric.add_argument("--model", nargs="+")
     parser_metric.add_argument("--model_name", type=str, default="model.ckpt")
-    parser_metric.add_argument("--vocoder_name", type=str, default="vocoder.pt")
     parser_metric.set_defaults(func=metric)
 
     # args

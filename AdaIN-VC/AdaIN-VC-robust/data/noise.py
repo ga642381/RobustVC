@@ -10,7 +10,7 @@ class WavAug:
     def __init__(
         self,
         sample_rate=16000,
-        p_clean=0,  # !TODO outside
+        p_clean=0,
         p_add=0,
         p_reverb=0.5,
         p_band=0.5,

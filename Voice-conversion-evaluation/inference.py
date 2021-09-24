@@ -109,6 +109,7 @@ def main(
     output_dir = (
         Path(output_dir)
         / Path(root).stem
+        / model_name
         / f"{metadata['source_corpus']}2{metadata['target_corpus']}"
     )
     output_dir.mkdir(parents=True, exist_ok=True)

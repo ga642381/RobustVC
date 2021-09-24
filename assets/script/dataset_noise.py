@@ -18,6 +18,7 @@ def parse_args():
     parser.add_argument("data_dir", type=str)
     parser.add_argument("save_dir", type=str)
     parser.add_argument("--p_clean", type=float)
+    parser.add_argument("--p_add", type=float)
     parser.add_argument("--p_reverb", type=float)
     parser.add_argument("--p_band", type=float)
     parser.add_argument("--out_sample_rate", type=int, default=16000)
@@ -36,7 +37,7 @@ def process_save_wav(wav_file, processor, data_dir, save_dir, sr):
     torchaudio.save(output_path, noisy_wav, sample_rate=sr)
 
 
-def main(data_dir, save_dir, p_clean, p_reverb, p_band, out_sample_rate):
+def main(data_dir, save_dir, p_clean, p_add, p_reverb, p_band, out_sample_rate):
     # dir
     data_dir = Path(data_dir).resolve()
     save_dir = Path(save_dir).resolve()
@@ -55,6 +56,7 @@ def main(data_dir, save_dir, p_clean, p_reverb, p_band, out_sample_rate):
     wavaug = WavAug(
         sample_rate=out_sample_rate,
         p_clean=p_clean,
+        p_add=p_add,
         p_reverb=p_reverb,
         p_band=p_band,
         mode="test",

@@ -1,8 +1,8 @@
 """Inference one utterance."""
-import warnings
-from datetime import datetime
 import importlib
+import warnings
 from argparse import ArgumentParser
+from datetime import datetime
 from pathlib import Path
 
 import torch
@@ -48,7 +48,9 @@ def parse_args():
     return vars(parser.parse_args())
 
 
-def main(data_dir, output_dir, root, target_dir, threshold_path, metadata_path, language):
+def main(
+    data_dir, output_dir, root, target_dir, threshold_path, metadata_path, language
+):
     """Main function"""
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -82,8 +84,7 @@ def main(data_dir, output_dir, root, target_dir, threshold_path, metadata_path, 
 
         calculate_score(**arguments)
         elaspe_time = datetime.now() - step_moment
-        print("[INFO]: The time of calculate score",
-              elaspe_time.total_seconds())
+        print("[INFO]: The time of calculate score", elaspe_time.total_seconds())
         print("-" * 100)
 
 

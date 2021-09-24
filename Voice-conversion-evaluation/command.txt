@@ -61,11 +61,23 @@ python calculate_objective_metric.py -d ./result/demucs_data/S2VC/VCTK2VCTK/ -r 
 
 
 #=====
-python vc_eval.py inference --dataset vad demand demand_demucs demand_metricgan demand_reverb_band --model AdaIN-VC 
+python vc_eval.py inference --dataset vad vad_demand vad_demand_demucs vad_demand_metricgan --model AdaIN-VC-robust --model_name model_mel512.ckpt --vocoder_name vocoder_mel512.pt  
 python vc_eval.py inference --dataset vad demand --model AdaIN-VC-robust
 
-python vc_eval.py metric --metric MOS --dataset vad demand --model AdaIN-VC-robust
+python vc_eval.py metric --metric MOS --dataset vad  vad_demand vad_demand_demucs vad_demand_metricgan  --model AdaIN-VC-robust
 python vc_eval.py metric --metric MOS --dataset vad demand demand_demucs demand_metricgan --model AdaIN-VC
 
 # ==== 0923 === #
 python vc_eval.py make_metadata -n 250
+
+python vc_eval.py inference --dataset vad vad_demand vad_wham vad_reverb vad_band --model AdaIN-VC-robust --model_name model_mel80.ckpt --vocoder_name vocoder_mel80.pt
+python vc_eval.py metric --metric MOS CER SVAR --dataset vad vad_demand vad_wham vad_reverb vad_band --model AdaIN-VC-robust --model_name model_mel80.ckpt
+
+python vc_eval.py inference --dataset vad vad_demand --model AdaIN-VC-robust --model_name model_mel512.ckpt --vocoder_name vocoder_mel512.pt
+python vc_eval.py metric --metric MOS CER SVAR --dataset vad vad_demand --model AdaIN-VC-robust --model_name model_mel512.ckpt
+
+python vc_eval.py inference --dataset vad vad_demand vad_wham vad_reverb vad_band --model AdaIN-VC-robust --model_name model_mel80.ckpt --vocoder_name vocoder_mel80.pt
+python vc_eval.py inference --dataset vad vad_demand vad_demand_demucs vad_demand_metricgan vad_wham vad_wham_demucs vad_wham_metricgan vad_reverb vad_reverb_demucs vad_reverb_metricgan vad_band vad_band_demucs vad_band_metricgan --model AdaIN-VC --model_name model_mel80.ckpt --vocoder_name vocoder_mel80.pt
+
+python vc_eval.py inference --dataset vad vad_demand vad_wham vad_reverb vad_band --model S2VC-robust --model_name model.pt --vocoder_name vocoder_cpc.pt
+python vc_eval.py inference --dataset vad vad_demand vad_demand_demucs vad_demand_metricgan vad_wham vad_wham_demucs vad_wham_metricgan vad_reverb vad_reverb_demucs vad_reverb_metricgan vad_band vad_band_demucs vad_band_metricgan --model S2VC --model_name model.ckpt --vocoder_name vocoder_cpc.pt

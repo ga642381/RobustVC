@@ -16,6 +16,10 @@ python dataset_metricgan.py ../vctk_test_demand ../vctk_test_demand_metricgan
 python dataset_noise.py --p_clean 0 --p_reverb 1 --p_band 1 ../vctk_test_demand ../vctk_test_demand_reverb_band
 
 ======= 20210923 =======
+#artifical dataset_noise.py
+python dataset_noise.py --p_clean 0 --p_add 0 --p_reverb 1 --p_band 0 ../vctk_test_vad ../vctk_test_vad_reverb
+python dataset_noise.py --p_clean 0 --p_add 0 --p_reverb 0 --p_band 1 ../vctk_test_vad ../vctk_test_vad_band
+
 #WHAM!
 python dataset_wham.py ../vctk_test_vad /storage/vc2021/dataset/high_res_wham ../vctk_test_wham 
 
@@ -25,6 +29,8 @@ python dataset_demand.py ../vctk_test_vad /fortress/dataset/vc2021/demand ../vct
 #demucs
 python dataset_demucs.py ../vctk_test_vad_demand ../vctk_test_vad_demand_demucs
 python dataset_demucs.py ../vctk_test_vad_wham ../vctk_test_vad_wham_demucs
+python dataset_demucs.py ../vctk_test_vad_reverb ../vctk_test_vad_reverb_demucs
+python dataset_demucs.py ../vctk_test_vad_band ../vctk_test_vad_band_demucs
 
 #metricgan+
 python dataset_metricgan.py ../vctk_test_vad_demand ../vctk_test_vad_demand_metricgan

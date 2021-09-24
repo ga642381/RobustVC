@@ -1,15 +1,14 @@
 """Character error rate"""
+import json
 from pathlib import Path
 
-import json
-import numpy as np
-from tqdm import tqdm
-import librosa
-import torch
-import jiwer
 import editdistance as ed
-
-from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer, Wav2Vec2Processor
+import jiwer
+import librosa
+import numpy as np
+import torch
+from tqdm import tqdm
+from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor, Wav2Vec2Tokenizer
 
 
 def load_model(root, device):
@@ -19,19 +18,15 @@ def load_model(root, device):
         "DE": "jonatasgrosman/wav2vec2-large-xlsr-53-german",
         "FR": "jonatasgrosman/wav2vec2-large-xlsr-53-french",
         "IT": "jonatasgrosman/wav2vec2-large-xlsr-53-italian",
-        "ES": "jonatasgrosman/wav2vec2-large-xlsr-53-spanish"
+        "ES": "jonatasgrosman/wav2vec2-large-xlsr-53-spanish",
     }
 
     print(f"[INFO]: Load the pre-trained ASR by {pretrain_models[root]}.")
     model = Wav2Vec2ForCTC.from_pretrained(pretrain_models[root]).to(device)
     if root.upper() == "EN":
-        tokenizer = Wav2Vec2Tokenizer.from_pretrained(
-            pretrain_models[root]
-        )
+        tokenizer = Wav2Vec2Tokenizer.from_pretrained(pretrain_models[root])
     elif root.upper() in ["DE", "FR", "IT", "ES"]:
-        tokenizer = Wav2Vec2Processor.from_pretrained(
-            pretrain_models[root]
-        )
+        tokenizer = Wav2Vec2Processor.from_pretrained(pretrain_models[root])
     else:
         print(f"{root} not available.")
         exit()
@@ -90,19 +85,17 @@ def calculate_score(model, device, data_dir, output_dir, metadata_path, **kwargs
         groundtruth = pair["content"]
 
         inputs = model["tokenizer"](
-            wav, sampling_rate=16_000, return_tensors="pt", padding="longest")
+            wav, sampling_rate=16_000, return_tensors="pt", padding="longest"
+        )
         input_values = inputs.input_values.to(device)
         attention_mask = inputs.attention_mask.to(device)
 
-        logits = model["model"](
-            input_values, attention_mask=attention_mask).logits
+        logits = model["model"](input_values, attention_mask=attention_mask).logits
         predicted_ids = torch.argmax(logits, dim=-1)
         transcription = model["tokenizer"].batch_decode(predicted_ids)[0]
-        cer = calculate_character_error_rate(
-            groundtruth, transcription)
+        cer = calculate_character_error_rate(groundtruth, transcription)
         cers.append(cer)
 
     average_score = np.mean(cers)
     print(f"[INFO]: Average character error rate: {average_score}")
-    print(
-        f"Average character error rate: {average_score}", file=output_path.open("a"))
+    print(f"Average character error rate: {average_score}", file=output_path.open("a"))
