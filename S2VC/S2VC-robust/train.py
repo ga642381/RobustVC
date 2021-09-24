@@ -276,13 +276,10 @@ def main(
     train_iterator = iter(train_loader)
 
     # === model === #
-    if src_feat == "cpc" and ref_feat == "cpc":
-        input_dim = 256
-        ref_dim = 256
-    if src_feat == "wav2vec" and ref_feat == "wav2vec":
-        input_dim = 768
-        ref_dim = 768
-
+    input_dim, ref_dim, tgt_dim = trainset.get_feat_dim()
+    print(
+        f"[INFO] Input dim: {input_dim}, Reference dim: {ref_dim}, Target dim: {tgt_dim}"
+    )
     model = S2VC(input_dim, ref_dim).to(device)
     model = torch.jit.script(model)
     feature_extractor = FeatureExtractor(ref_feat, wav2vec_path, device=device)
