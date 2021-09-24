@@ -31,7 +31,7 @@ def main(clean_dir, noisy_dir):
     noisy_dir = Path(noisy_dir).resolve()
     assert clean_dir != noisy_dir, f"clean_dir and noisy_dir should not be the same!"
     assert clean_dir.exists(), f"{clean_dir} does not exist!"
-    print(f"[INFO] Task : Calculating PESQ for speech enhancement")
+    print(f"[INFO] Task : Calculating PESQ and STOI for speech enhancement")
     print(f"[INFO] clean_dir : {clean_dir}")
     print(f"[INFO] noisy_dir : {noisy_dir}")
 
@@ -70,7 +70,7 @@ def main(clean_dir, noisy_dir):
     pesq_avg = sum(pesq_scores) / len(pesq_scores)
     stoi_avg = sum(stoi_scores) / len(stoi_scores)
     print(f"[RESULT] average PESQ of {n_files} wav files : {pesq_avg}")
-    print(f"[RESULT] average PESQ of {n_files} wav files : {stoi_avg}")
+    print(f"[RESULT] average STOI of {n_files} wav files : {stoi_avg}")
 
 
 if __name__ == "__main__":

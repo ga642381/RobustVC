@@ -38,6 +38,7 @@ class IntraSpeakerDataset(Dataset):
         n_samples=5,
         training=True,
         clean_wav_ratio=0.4,
+        wav2vec_path=None,
     ):
         with open(metadata_path, "r") as f:
             metadata = json.load(f)
@@ -84,8 +85,8 @@ class IntraSpeakerDataset(Dataset):
         self.tgt_dim = -1
 
         # === add noise === #
-        self.src_feat_extractor = FeatureExtractor(src_feat, None, device="cpu")
-        self.ref_feat_extractor = FeatureExtractor(ref_feat, None, device="cpu")
+        self.src_feat_extractor = FeatureExtractor(src_feat, wav2vec_path, device="cpu")
+        self.ref_feat_extractor = FeatureExtractor(ref_feat, wav2vec_path, device="cpu")
         self.wavaug = WavAug(
             sample_rate=16000, p_clean=0, p_add=0, p_reverb=0.5, p_band=0.5
         )
@@ -149,8 +150,8 @@ class IntraSpeakerDataset(Dataset):
             )
 
         # set shapes
-        self.src_dim = 256
-        self.ref_dim = 256
+        self.src_dim = source_emb.shape[1]
+        self.ref_dim = target_emb.shape[1]
         self.tgt_dim = ground_mel.shape[1]
 
         return (

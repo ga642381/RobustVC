@@ -49,6 +49,7 @@ def parse_args():
     parser.add_argument("-r", "--ref_feat", type=str, default="cpc")
     parser.add_argument("--lr_reduction", action="store_true")
     parser.add_argument("--comment", type=str)
+    parser.add_argument("--wav2vec_path", type=str, default=None)
 
     return vars(parser.parse_args())
 
@@ -220,6 +221,7 @@ def main(
     ref_feat,
     lr_reduction,
     comment,
+    wav2vec_path,
 ):
     """Main function."""
 
@@ -236,6 +238,7 @@ def main(
         ref_feat,
         n_samples,
         clean_wav_ratio=clean_ratio,
+        wav2vec_path=wav2vec_path,
     )
 
     validset = IntraSpeakerDataset(
@@ -247,6 +250,7 @@ def main(
         ref_feat,
         n_samples,
         clean_wav_ratio=clean_ratio,
+        wav2vec_path=wav2vec_path,
     )
 
     train_loader = DataLoader(
@@ -272,11 +276,16 @@ def main(
     train_iterator = iter(train_loader)
 
     # === model === #
-    input_dim = 256
-    ref_dim = 256
+    if src_feat == "cpc" and ref_feat == "cpc":
+        input_dim = 256
+        ref_dim = 256
+    if src_feat == "wav2vec" and ref_feat == "wav2vec":
+        input_dim = 768
+        ref_dim = 768
+
     model = S2VC(input_dim, ref_dim).to(device)
     model = torch.jit.script(model)
-    feature_extractor = FeatureExtractor(ref_feat, None, device=device)
+    feature_extractor = FeatureExtractor(ref_feat, wav2vec_path, device=device)
 
     # === log === #
     if comment is not None:
