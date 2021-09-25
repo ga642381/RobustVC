@@ -19,7 +19,8 @@ from torch.utils.data import DataLoader, random_split
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
-from data import IntraSpeakerDataset, collate_pseudo, plot_attn, train_valid_test
+from data import (IntraSpeakerDataset, collate_pseudo, plot_attn,
+                  train_valid_test)
 from data.feature_extract import FeatureExtractor
 from models import S2VC, get_cosine_schedule_with_warmup
 
@@ -39,7 +40,7 @@ def parse_args():
     parser.add_argument("--adv_ratio", type=float, default=0.5)  #
     parser.add_argument("--total_steps", type=int, default=1000000)
     parser.add_argument("--warmup_steps", type=int, default=100)
-    parser.add_argument("--valid_steps", type=int, default=5000)
+    parser.add_argument("--valid_steps", type=int, default=100)
     parser.add_argument("--log_steps", type=int, default=100)
     parser.add_argument("--save_steps", type=int, default=10000)
     parser.add_argument("--accu_steps", type=int, default=2)
@@ -219,7 +220,7 @@ def model_fn(
     return sum(losses) / len(losses), attns_plot
 
 
-def valid(dataloader, model, criterion, device):
+def valid(dataloader, model, criterion, device, feature_extractor):
     """Validate on validation set."""
 
     model.eval()
@@ -228,7 +229,9 @@ def valid(dataloader, model, criterion, device):
 
     for i, batch in enumerate(dataloader):
         with torch.no_grad():
-            loss, attns = model_fn(batch, model, 0, criterion, device, None)
+            loss, attns = model_fn(
+                batch, model, 0, criterion, device, feature_extractor
+            )
             running_loss += loss.item()
 
         pbar.update(dataloader.batch_size)
@@ -384,7 +387,9 @@ def main(
         if (step + 1) % valid_steps == 0:
             pbar.close()
 
-            valid_loss, attns = valid(valid_loader, model, criterion, device)
+            valid_loss, attns = valid(
+                valid_loader, model, criterion, device, feature_extractor
+            )
 
             if comment is not None:
                 writer.add_scalar("Loss/valid", valid_loss, step + 1)
