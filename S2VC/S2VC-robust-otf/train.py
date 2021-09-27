@@ -149,7 +149,7 @@ def model_fn(
     # === on the fly feature extraction === #
     # ! we are using the same feature for both src and tgt
     src_wavs = [src_wav.to(device) for src_wav in src_wavs]
-    # tgt_wavs = [tgt_wav.to(device) for tgt_wav in tgt_wavs]
+    tgt_wavs = [tgt_wav.to(device) for tgt_wav in tgt_wavs]
 
     srcs = src_feat_extractor.get_feature(src_wavs)
     # tgts = tgt_feat_extractor.get_feature(tgt_wavs)
