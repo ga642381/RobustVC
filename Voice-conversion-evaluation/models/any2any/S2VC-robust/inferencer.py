@@ -38,12 +38,6 @@ class Inferencer:
 
         with torch.no_grad():
             tgt_mels = self.ref_feat_model.get_feature(tgt_wavs)
-            src_mel = (
-                self.ref_feat_model.get_feature([src_wav])[0]
-                .transpose(0, 1)
-                .unsqueeze(0)
-                .to(self.device)
-            )
             tgt_mels = [tgt_mel.cpu() for tgt_mel in tgt_mels]
             tgt_mel = np.concatenate(tgt_mels, axis=0)
             tgt_mel = torch.FloatTensor(tgt_mel.T).unsqueeze(0).to(self.device)

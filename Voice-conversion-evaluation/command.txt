@@ -81,3 +81,14 @@ python vc_eval.py inference --dataset vad vad_demand vad_demand_demucs vad_deman
 
 python vc_eval.py inference --dataset vad vad_demand vad_wham vad_reverb vad_band --model S2VC-robust --model_name model.pt --vocoder_name vocoder_cpc.pt
 python vc_eval.py inference --dataset vad vad_demand vad_demand_demucs vad_demand_metricgan vad_wham vad_wham_demucs vad_wham_metricgan vad_reverb vad_reverb_demucs vad_reverb_metricgan vad_band vad_band_demucs vad_band_metricgan --model S2VC --model_name model.ckpt --vocoder_name vocoder_cpc.pt
+
+# ==== 0925 === #
+python vc_eval.py inference --dataset vad vad_demand vad_wham vad_reverb vad_band --model S2VC-robust --model_name model_0925.pt --vocoder_name vocoder_cpc.pt
+python vc_eval.py metric --metric CER --dataset vad vad_demand vad_wham vad_reverb vad_band --model S2VC-robust --model_name model_0925.pt
+
+# === 0926 === #
+python vc_eval.py inference --dataset vad vad_demand vad_wham --model S2VC-robust --model_name model_0926_b6_c10.pt --vocoder_name vocoder_cpc.pt
+python vc_eval.py metric --metricc CER --dataset vad vad_demand vad_wham --model S2VC-robust --model_name model_0926_b6_c10.pt
+
+# === 0927 === #
+python vc_eval.py inference --dataset vad vad_demand vad_demand_demucs vad_demand_metricgan vad_wham vad_wham_demucs vad_wham_metricgan vad_reverb vad_reverb_demucs vad_reverb_metricgan vad_band vad_band_demucs vad_band_metricgan --model S2VC-robust --model_name model_0927_b12_c10_50k.pt --vocoder_name vocoder_cpc.pt

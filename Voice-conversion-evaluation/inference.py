@@ -26,9 +26,7 @@ def parse_args():
     parser.add_argument("-t", "--target_dir", type=str, help="target dir path")
     parser.add_argument("-o", "--output_dir", type=str, help="output wav path")
     parser.add_argument("-r", "--root", type=str, help="the model dir")
-    parser.add_argument(
-        "-b", "--batch_size", type=int, default=10, help="the model dir"
-    )
+    parser.add_argument("-b", "--batch_size", type=int, default=64, help="batch size")
     parser.add_argument("--reload", action="store_true")
     parser.add_argument("--reload_dir", type=str, help="reload dir path")
     parser.add_argument("--model_name", type=str, default="model.ckpt")

@@ -229,7 +229,7 @@ def valid(dataloader, model, criterion, device, feature_extractor):
     for i, batch in enumerate(dataloader):
         with torch.no_grad():
             loss, attns = model_fn(
-                batch, model, 0, criterion, device, feature_extractor
+                batch, model, 0, criterion, device, feature_extractor, feature_extractor
             )
             running_loss += loss.item()
 
@@ -267,6 +267,8 @@ def main(
 
     metadata_path = Path(data_dir) / "metadata.json"
 
+    # !we assume src_feat == tgt_feat fow now
+    assert src_feat == tgt_feat
     feature_extractor = FeatureExtractor(tgt_feat, wav2vec_path, device=device)
 
     # === dataset === #
@@ -361,7 +363,13 @@ def main(
                 batch = next(train_iterator)
 
             loss, attns = model_fn(
-                batch, model, adv_ratio, criterion, device, feature_extractor
+                batch,
+                model,
+                adv_ratio,
+                criterion,
+                device,
+                feature_extractor,
+                feature_extractor,
             )
             loss = loss / accu_steps
             batch_loss += loss.item()
