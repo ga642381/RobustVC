@@ -15,7 +15,7 @@ class FeatureExtractor:
         if feature_name in ["apc", "cpc", "timit_posteriorgram", "fbank"]:
             self.extractor = (
                 torch.hub.load(
-                    "ga642381/s3prl",
+                    "ga642381/s3prl:s2vc",
                     feature_name,
                     refresh=True,
                 )
