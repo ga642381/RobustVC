@@ -1,6 +1,8 @@
 import argparse
 from pathlib import Path
 
+from yaml import load
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -8,7 +10,6 @@ import torchaudio
 from torch import Tensor
 from torch.nn.utils.rnn import pad_sequence
 from tqdm import trange
-from yaml import load
 
 from data import load_wav
 from data.feature_extract import FeatureExtractor
@@ -41,12 +42,12 @@ def emb_attack(
     tgt_wavs: Tensor,
     eps: float,
     n_steps: int,
-) -> Tensor:
+    ) -> Tensor:
     feat_extractor.extractor.train()
     src_wavs = src_wavs[None, :]
     tgt_wavs = tgt_wavs[None, :]
     ptbs = [
-        torch.empty_like(src_wav).randn(0, 1).requires_grad_(True)
+        torch.empty_like(src_wav).randn_(0, 1).requires_grad_(True)
         for src_wav in src_wavs
     ]
     atk_src_wavs = [src_wav + eps * ptb.tanh() for src_wav, ptb in zip(src_wavs, ptbs)]
@@ -54,6 +55,7 @@ def emb_attack(
 
     src_feats = feat_extractor.get_feature(src_wavs)
     tgt_feats = feat_extractor.get_feature(tgt_wavs)
+
 
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(ptbs, lr=1e-4)
@@ -70,7 +72,10 @@ def emb_attack(
         optimizer.step()
 
     with torch.no_grad():
-        adv_wavs = [src_wav + eps * ptb.tanh() for src_wav, ptb in zip(src_wavs, ptbs)]
+        adv_wavs = [
+            src_wav + eps * ptb.tanh()
+            for src_wav, ptb in zip(src_wavs, ptbs)
+        ]
         return adv_wavs
 
 
@@ -83,7 +88,7 @@ def main(
     wav2vec_path: Path,
     eps: float,
     n_steps: int,
-):
+    ):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = torch.jit.load(model_path)
     feat_extractor = FeatureExtractor(feat_type, wav2vec_path, device)
@@ -93,13 +98,13 @@ def main(
     tgt_wav = torch.from_numpy(tgt_wav)
     assert src_wav.ndim == tgt_wav.ndim == 1
     adv_wav = emb_attack(
-        model.to(device),
-        feat_extractor,
-        src_wav.to(device),
-        tgt_wav.to(device),
-        eps,
-        n_steps,
-    )
+                model.to(device),
+                feat_extractor,
+                src_wav.to(device),
+                tgt_wav.to(device),
+                eps,
+                n_steps,
+                )
     assert adv_wav.ndim == 2
     torchaudio.save(out_path, adv_wav)
 

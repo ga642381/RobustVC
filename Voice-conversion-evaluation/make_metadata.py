@@ -1,8 +1,9 @@
 """Sample test pairs"""
-from pathlib import Path
-from importlib import import_module
 import argparse
 import json
+from importlib import import_module
+from pathlib import Path
+
 from tqdm import tqdm
 
 
@@ -10,18 +11,17 @@ def parse_args():
     """Parse command-line arguments."""
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("source_corpus_name", type=str,
-                        help="source corpus name.")
+    parser.add_argument("source_corpus_name", type=str, help="source corpus name.")
     parser.add_argument("source_dir", type=str, help="source dir.")
-    parser.add_argument("target_corpus_name", type=str,
-                        help="target corpus name.")
+    parser.add_argument("target_corpus_name", type=str, help="target corpus name.")
     parser.add_argument("target_dir", type=str, help="target dir.")
-    parser.add_argument("-o", "--output_dir", type=str,
-                        help="path of pickle file.")
-    parser.add_argument("-sp", "--source_parser_name", type=str,
-                        default=None, help="source parser name")
-    parser.add_argument("-tp", "--target_parser_name", type=str,
-                        default=None, help="target parser name")
+    parser.add_argument("-o", "--output_dir", type=str, help="path of pickle file.")
+    parser.add_argument(
+        "-sp", "--source_parser_name", type=str, default=None, help="source parser name"
+    )
+    parser.add_argument(
+        "-tp", "--target_parser_name", type=str, default=None, help="target parser name"
+    )
     parser.add_argument(
         "-n", "--n_samples", type=int, default=2000, help="number of samples."
     )
@@ -33,10 +33,16 @@ def parse_args():
         help="number of target samples.",
     )
     parser.add_argument(
-        "--s_seed", type=int, default=None, help="The random seed for sampling source utterances."
+        "--s_seed",
+        type=int,
+        default=None,
+        help="The random seed for sampling source utterances.",
     )
     parser.add_argument(
-        "--t_seed", type=int, default=None, help="The random seed for sampling target utterances."
+        "--t_seed",
+        type=int,
+        default=None,
+        help="The random seed for sampling target utterances.",
     )
 
     return vars(parser.parse_args())
@@ -72,12 +78,14 @@ def sample_pairs(
         target_parser_name = target_corpus_name
     source_parser = create_parser(parser_dir, source_parser_name, source_dir)
     target_parser = create_parser(parser_dir, target_parser_name, target_dir)
+    atk_target_parser = create_parser(parser_dir, target_parser_name, target_dir)
 
     if s_seed is not None:
         source_parser.set_random_seed(s_seed)
 
     if t_seed is not None:
         target_parser.set_random_seed(t_seed)
+        atk_target_parser.set_random_seed(t_seed)
 
     metadata = {
         "source_corpus": source_corpus_name,
@@ -86,6 +94,8 @@ def sample_pairs(
         "target_corpus": target_corpus_name,
         "target_corpus_speaker_number": target_parser.get_speaker_number(),
         "target_random_seed": target_parser.seed,
+        "atk_target_corpus_speaker_number": atk_target_parser.get_speaker_number(),
+        "atk_target_random_seed": atk_target_parser.seed,
         "n_samples": n_samples,
         "n_target_samples": n_target_samples,
         "pairs": [],
@@ -94,13 +104,19 @@ def sample_pairs(
     for _ in tqdm(range(n_samples)):
         source_wav, source_speaker_id, content, second = source_parser.sample_source()
         target_wavs, target_speaker_id = target_parser.sample_targets(
-            n_target_samples, source_speaker_id)
+            n_target_samples, source_speaker_id
+        )
+        atk_target_wavs, atk_target_speaker_id = atk_target_parser.sample_targets(
+            n_target_samples, target_speaker_id
+        )
         metadata["pairs"].append(
             {
                 "source_speaker": source_speaker_id,
                 "target_speaker": target_speaker_id,
+                "atk_target_speaker": atk_target_speaker_id,
                 "src_utt": source_wav,
                 "tgt_utts": target_wavs,
+                "atk_tgt_utts": atk_target_wavs,
                 "content": content,
                 "src_second": second,
             }

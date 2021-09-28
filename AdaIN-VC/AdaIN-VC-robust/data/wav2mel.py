@@ -11,6 +11,9 @@ class Wav2Mel(torch.nn.Module):
     def __init__(
         self,
         sox_effect: bool = True,
+        resample: bool = True,
+        norm_vad: bool = True,
+        norm: bool = False,
         sample_rate: float = 16000,
         norm_db: float = -3.0,
         fft_window_ms: float = 50.0,
@@ -38,7 +41,7 @@ class Wav2Mel(torch.nn.Module):
         # sox effect
         if sox_effect:
             self.sox_effects = SoxEffects(
-                resample=True, norm_vad=True, norm=False, norm_db=norm_db
+                resample=resample, norm_vad=norm_vad, norm=norm, norm_db=norm_db
             )
         # mel spectrogram
         self.log_melspectrogram = LogMelspectrogram(

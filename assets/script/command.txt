@@ -19,6 +19,8 @@ python dataset_noise.py --p_clean 0 --p_reverb 1 --p_band 1 ../vctk_test_demand 
 #artifical dataset_noise.py
 python dataset_noise.py --p_clean 0 --p_add 0 --p_reverb 1 --p_band 0 ../vctk_test_vad ../vctk_test_vad_reverb
 python dataset_noise.py --p_clean 0 --p_add 0 --p_reverb 0 --p_band 1 ../vctk_test_vad ../vctk_test_vad_band
+python dataset_noise.py --p_clean 0 --p_add 0 --p_reverb 1 --p_band 1 ../vctk_test_vad_demand ../vctk_test_vad_demand_reverb_band
+python dataset_noise.py --p_clean 0 --p_add 0 --p_reverb 1 --p_band 1 ../vctk_test_vad_wham ../vctk_test_vad_wham_reverb_band
 
 #WHAM!
 python dataset_wham.py ../vctk_test_vad /storage/vc2021/dataset/high_res_wham ../vctk_test_wham 
@@ -31,19 +33,34 @@ python dataset_demucs.py ../vctk_test_vad_demand ../vctk_test_vad_demand_demucs
 python dataset_demucs.py ../vctk_test_vad_wham ../vctk_test_vad_wham_demucs
 python dataset_demucs.py ../vctk_test_vad_reverb ../vctk_test_vad_reverb_demucs
 python dataset_demucs.py ../vctk_test_vad_band ../vctk_test_vad_band_demucs
+python dataset_demucs.py ../vctk_test_vad_demand_reverb_band ../vctk_test_vad_demand_reverb_band_demucs
+python dataset_demucs.py ../vctk_test_vad_wham_reverb_band ../vctk_test_vad_wham_reverb_band_demucs
 
 #metricgan+
 python dataset_metricgan.py ../vctk_test_vad_demand ../vctk_test_vad_demand_metricgan
 python dataset_metricgan.py ../vctk_test_vad_wham ../vctk_test_vad_wham_metricgan
+python dataset_metricgan.py ../vctk_test_vad_demand_reverb_band ../vctk_test_vad_demand_reverb_band_metricgan
+python dataset_metricgan.py ../vctk_test_vad_wham_reverb_band ../vctk_test_vad_wham_reverb_band_metricgan
+
+# DCCRnet
+python dataset_dccrnet.py ../vctk_test_vad_demand ../vctk_test_vad_demand_dccrnet
+python dataset_dccrnet.py ../vctk_test_vad_wham ../vctk_test_vad_wham_dccrnet
 
 #pesq
-python metric_pesq.py ../vctk_test_vad ../vctk_test_vad_demand_demucs    //3.0143149600222836
-python metric_pesq.py ../vctk_test_vad ../vctk_test_vad_demand_metricgan //3.1467211523560383
+python metric_pesq.py ../vctk_test_vad ../vctk_test_vad_demand_demucs  
+python metric_pesq.py ../vctk_test_vad ../vctk_test_vad_demand_metricgan
+python metric_pesq.py ../vctk_test_vad ../vctk_test_vad_demand_dccrnet
+python metric_pesq.py ../vctk_test_vad ../vctk_test_vad_demand_reverb_band_demucs
 
-python metric_pesq.py ../vctk_test_vad ../vctk_test_vad_wham_demucs // 2.6162590409008666
-python metric_pesq.py ../vctk_test_vad ../vctk_test_vad_wham_metricgan //2.516800989639799
 
+python metric_pesq.py ../vctk_test_vad ../vctk_test_vad_wham_demucs 
+python metric_pesq.py ../vctk_test_vad ../vctk_test_vad_wham_metricgan 
+python metric_pesq.py ../vctk_test_vad ../vctk_test_vad_demand_reverb_band_metricgan
 
+# attack
+python dataset_adain_attack.py --save_dir ../vctk_test_vad_AdaIN-VC-robust-adv_attack --model_path ../../Voice-conversion-evaluation/models/any2any/AdaIN-VC-robust/checkpoints/model_adv_mel80.ckpt
+python dataset_adain_attack.py --save_dir ../vctk_test_vad_AdaIN-VC-robust_attack --model_path ../../Voice-conversion-evaluation/models/any2any/AdaIN-VC-robust/checkpoints/model_mel80.ckpt
+python dataset_adain_attack.py --save_dir ../vctk_test_vad_AdaIN-VC_attack --model_path ../../Voice-conversion-evaluation/models/any2any/AdaIN-VC/checkpoints/model_mel80.ckpt
 
 // training dataset
 

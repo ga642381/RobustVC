@@ -101,7 +101,7 @@ def main(data_dir, noise_dir, save_dir, mode):
     print(f"[INFO] SNR sampled from : {SNR}")
 
     # add noise with multiporcessing
-    file_to_noisy_file = partial(
+    file_to_clean_file = partial(
         process_save_wav,
         processor=mix_noise,
         data_dir=data_dir,
@@ -113,7 +113,7 @@ def main(data_dir, noise_dir, save_dir, mode):
     print(f"[INFO] Start multiprocessing with {N_processes} processes")
 
     with Pool(processes=N_processes) as pool:
-        for _ in tqdm(pool.imap(file_to_noisy_file, wav_files), total=len(wav_files)):
+        for _ in tqdm(pool.imap(file_to_clean_file, wav_files), total=len(wav_files)):
             pass
 
     # copy text files

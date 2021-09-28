@@ -92,3 +92,15 @@ python vc_eval.py metric --metricc CER --dataset vad vad_demand vad_wham --model
 
 # === 0927 === #
 python vc_eval.py inference --dataset vad vad_demand vad_demand_demucs vad_demand_metricgan vad_wham vad_wham_demucs vad_wham_metricgan vad_reverb vad_reverb_demucs vad_reverb_metricgan vad_band vad_band_demucs vad_band_metricgan --model S2VC-robust --model_name model_0927_b12_c10_50k.pt --vocoder_name vocoder_cpc.pt
+python vc_eval.py metric --metric MOS CER SVAR --dataset vad vad_demand vad_demand_demucs vad_demand_metricgan vad_wham vad_wham_demucs vad_wham_metricgan vad_reverb vad_reverb_demucs vad_reverb_metricgan vad_band vad_band_demucs vad_band_metricgan --model S2VC-robust --model_name model_0927_b12_c10_50k.pt
+
+python vc_eval.py metric --metric MOS CER SVAR --dataset vad vad_demand vad_demand_demucs vad_demand_metricgan vad_wham vad_wham_demucs vad_wham_metricgan vad_reverb vad_reverb_demucs vad_reverb_metricgan vad_band vad_band_demucs vad_band_metricgan --model S2VC-robust --model_name model_0927_b12_c10_50k.pt
+
+
+# === 0928 attack ===#
+python vc_eval.py inference_attack --dataset vad_AdaIN-VC-robust_attack --model AdaIN-VC-robust --model_name model_mel80.ckpt --vocoder_name vocoder_mel80.pt
+python vc_eval.py inference_attack --dataset vad_AdaIN-VC-robust-adv_attack --model AdaIN-VC-robust --model_name model_adv_mel80.ckpt --vocoder_name vocoder_mel80.pt
+python vc_eval.py inference_attack --model AdaIN-VC --model_name model_mel80.ckpt --vocoder_name vocoder_mel80.pt
+
+python vc_eval.py metric --metric SVAR --dataset attack --model AdaIN-VC-robust --model_name model_mel80.ckpt
+python vc_eval.py metric --metric SVAR --dataset vad_attack --model AdaIN-VC --model_name model_mel80.ckpt

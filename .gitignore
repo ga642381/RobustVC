@@ -14,7 +14,7 @@ result/
 *command*.txt
 *pretrained*/
 src/
-
+logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -8,28 +8,39 @@ dataset = "demand"
 def make_metadata(args):
     n_samples = args.n
     # === #
-    cmd = f"python make_metadata.py VCTK /fortress/vc2021/robust-vc/assets/vctk_test_vad VCTK /fortress/vc2021/robust-vc/assets/vctk_test_vad -n {n_samples} -nt 1 -o ./metadata"
+    cmd = f"python make_metadata.py VCTK /fortress/vc2021/robust-vc/assets/vctk_test_vad VCTK /fortress/vc2021/robust-vc/assets/vctk_test_vad -n {n_samples} -nt 1 -o ./metadata --s_seed 261 --t_seed 444"
     print("[Command]", cmd)
     os.system(cmd)
 
 
 def inference(args):
     datasets = args.dataset
-    models = args.model
+    model = args.model
     model_name = args.model_name
     vocoder_name = args.vocoder_name
     # === #
     for dataset in datasets:
-        for model in models:
-            cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -t /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --vocoder_name {vocoder_name}"
-            print("[Command]", cmd)
-            os.system(cmd)
+        cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -t /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --vocoder_name {vocoder_name}"
+        print("[Command]", cmd)
+        os.system(cmd)
+
+
+def inference_attack(args):
+    model = args.model
+    datasets = args.dataset
+    model_name = args.model_name
+    vocoder_name = args.vocoder_name
+    # === #
+    for dataset in datasets:
+        cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_vad -t /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --vocoder_name {vocoder_name}"
+        print("[Command]", cmd)
+        os.system(cmd)
 
 
 def metric(args):
     metrics = args.metric
     datasets = args.dataset
-    models = args.model
+    model = args.model
     model_name = args.model_name
     mapping = {
         "MOS": "mean_opinion_score",
@@ -39,24 +50,21 @@ def metric(args):
     # === #
     if "MOS" in metrics:
         for dataset in datasets:
-            for model in models:
-                cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/{model_name}/VCTK2VCTK/ -r metrics/mean_opinion_score -o ./result/{dataset}_data/{model}/{model_name}"
-                print("[Command]", cmd)
-                os.system(cmd)
+            cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/{model_name}/VCTK2VCTK/ -r metrics/mean_opinion_score -o ./result/{dataset}_data/{model}/{model_name}"
+            print("[Command]", cmd)
+            os.system(cmd)
 
     if "CER" in metrics:
         for dataset in datasets:
-            for model in models:
-                cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/{model_name}/VCTK2VCTK/ -r metrics/character_error_rate -o ./result/{dataset}_data/{model}/{model_name}"
-                print("[Command]", cmd)
-                os.system(cmd)
+            cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/{model_name}/VCTK2VCTK/ -r metrics/character_error_rate -o ./result/{dataset}_data/{model}/{model_name}"
+            print("[Command]", cmd)
+            os.system(cmd)
 
     if "SVAR" in metrics:
         for dataset in datasets:
-            for model in models:
-                cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/{model_name}/VCTK2VCTK/ -r metrics/speaker_verification -o ./result/{dataset}_data/{model}/{model_name} -t /fortress/vc2021/robust-vc/assets/vctk_test_vad --th metrics/speaker_verification/equal_error_rate/VCTK_eer.yaml"
-                print("[Command]", cmd)
-                os.system(cmd)
+            cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/{model_name}/VCTK2VCTK/ -r metrics/speaker_verification -o ./result/{dataset}_data/{model}/{model_name} -t /fortress/vc2021/robust-vc/assets/vctk_test_vad --th metrics/speaker_verification/equal_error_rate/VCTK_eer.yaml"
+            print("[Command]", cmd)
+            os.system(cmd)
 
 
 if __name__ == "__main__":
@@ -70,16 +78,24 @@ if __name__ == "__main__":
     # inference
     parser_inference = subparsers.add_parser("inference")
     parser_inference.add_argument("--dataset", nargs="+")
-    parser_inference.add_argument("--model", nargs="+")
+    parser_inference.add_argument("--model", type=str)
     parser_inference.add_argument("--model_name", type=str, default="model.ckpt")
     parser_inference.add_argument("--vocoder_name", type=str, default="vocoder.pt")
     parser_inference.set_defaults(func=inference)
+
+    # inference_attack
+    parser_inference_atk = subparsers.add_parser("inference_attack")
+    parser_inference_atk.add_argument("--dataset", nargs="+")
+    parser_inference_atk.add_argument("--model", type=str)
+    parser_inference_atk.add_argument("--model_name", type=str, default="model.ckpt")
+    parser_inference_atk.add_argument("--vocoder_name", type=str, default="vocoder.pt")
+    parser_inference_atk.set_defaults(func=inference_attack)
 
     # metrics
     parser_metric = subparsers.add_parser("metric")
     parser_metric.add_argument("--metric", nargs="+")
     parser_metric.add_argument("--dataset", nargs="+")
-    parser_metric.add_argument("--model", nargs="+")
+    parser_metric.add_argument("--model", type=str)
     parser_metric.add_argument("--model_name", type=str, default="model.ckpt")
     parser_metric.set_defaults(func=metric)
 
