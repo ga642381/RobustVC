@@ -11,7 +11,7 @@ import soundfile as sf
 import torch
 import torchaudio
 from asteroid.dsp.normalization import normalize_estimates
-from asteroid.models import DCCRNet
+from asteroid.models import ConvTasNet
 from tqdm import tqdm
 
 
@@ -47,7 +47,7 @@ def main(data_dir, save_dir):
     save_dir = Path(save_dir).resolve()
     assert data_dir != save_dir, f"data_dir and save_dir should not be the same!"
     assert data_dir.exists(), f"{data_dir} does not exist!"
-    print(f"[INFO] Task : Denoise with DCCRNet")
+    print(f"[INFO] Task : Denoise with ConvTasNet")
     print(f"[INFO] data_dir : {data_dir}")
     print(f"[INFO] save_dir : {save_dir}")
     save_dir.mkdir(parents=True, exist_ok=True)
@@ -58,10 +58,10 @@ def main(data_dir, save_dir):
 
     # denoise
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    enhance_model = DCCRNet.from_pretrained(
-        "JorisCos/DCCRNet_Libri1Mix_enhsingle_16k"
+    enhance_model = ConvTasNet.from_pretrained(
+        "JorisCos/ConvTasNet_Libri1Mix_enhsingle_16k"
     ).to(device)
-    print(f"[INFO] DCCRNet loaded from Asteroid!")
+    print(f"[INFO] ConvTasNet loaded from Asteroid!")
 
     file_to_clean_file = partial(
         process_save_wav,
