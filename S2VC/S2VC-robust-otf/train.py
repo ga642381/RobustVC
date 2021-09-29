@@ -99,7 +99,7 @@ def emb_attack(
     tgt_wavs,
     masks,
     spks,
-    eps=0.05,
+    eps=0.005,
     alpha=0.001,
 ):
     feat_extractor.extractor.train()
