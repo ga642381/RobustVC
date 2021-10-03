@@ -9,10 +9,21 @@ from pathlib import Path
 from typing import List
 
 import librosa
+import torch
+import torchaudio
 from pesq import pesq
 from pystoi import stoi
 from scipy.io import wavfile
+from torchmetrics.functional.audio.si_sdr import si_sdr
+from torchmetrics.functional.audio.snr import snr
 from tqdm import tqdm
+
+
+def cal_sisdr(clean_wav_path, noisy_wav_path):
+    noisy_wav, _ = torchaudio.load(noisy_wav_path)
+    clean_wav, _ = torchaudio.load(clean_wav_path)
+    si_sdr_score = snr(noisy_wav, clean_wav)
+    return si_sdr_score.item()
 
 
 def cal_pesq(fs):
@@ -23,7 +34,8 @@ def cal_pesq(fs):
     assert r1 == r2
     stoi_score = stoi(clean_wav, noisy_wav, r1)
     pesq_score = pesq(r1, clean_wav, noisy_wav, "wb")
-    return pesq_score, stoi_score
+    si_sdr_score = cal_sisdr(clean_wav_path, noisy_wav_path)
+    return pesq_score, stoi_score, si_sdr_score
 
 
 def main(clean_dir, noisy_dir):
@@ -52,6 +64,7 @@ def main(clean_dir, noisy_dir):
     # main calculating pesq function
     pesq_scores = []
     stoi_scores = []
+    si_sdr_scores = []
     n_files = len(clean_noisy_wav_files)
 
     N_processes = cpu_count()
@@ -59,18 +72,22 @@ def main(clean_dir, noisy_dir):
     with Pool(processes=N_processes) as pool:
 
         with tqdm(total=n_files) as pbar:
-            for i, (pesq_score, stoi_score) in enumerate(
+            for i, (pesq_score, stoi_score, si_sdr_score) in enumerate(
                 pool.imap_unordered(cal_pesq, clean_noisy_wav_files)
             ):
 
                 pesq_scores.append(pesq_score)
                 stoi_scores.append(stoi_score)
+                si_sdr_scores.append(si_sdr_score)
                 pbar.update()
 
     pesq_avg = sum(pesq_scores) / len(pesq_scores)
     stoi_avg = sum(stoi_scores) / len(stoi_scores)
+    # si_sdr_scores = [x for x in si_sdr_scores if x < 0]
+    si_sdr_avg = sum(si_sdr_scores) / len(si_sdr_scores)
     print(f"[RESULT] average PESQ of {n_files} wav files : {pesq_avg}")
     print(f"[RESULT] average STOI of {n_files} wav files : {stoi_avg}")
+    print(f"[RESULT] average SI-SDR of {n_files} wav files : {si_sdr_avg}")
 
 
 if __name__ == "__main__":

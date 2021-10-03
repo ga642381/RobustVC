@@ -3,10 +3,20 @@ from multiprocessing import Pool, cpu_count
 from typing import List
 
 import torch
-from models import load_pretrained_wav2vec
+from fairseq.checkpoint_utils import load_model_ensemble
 from torch.nn.utils.rnn import pad_sequence
 
 from .utils import log_mel_spectrogram
+
+
+def load_pretrained_wav2vec(ckpt_path: str):
+    """Load pretrained Wav2Vec model."""
+    ckpt_path = str(ckpt_path)
+    model, cfg = load_model_ensemble([ckpt_path])
+    model = model[0]
+    model.remove_pretraining_modules()
+    model.eval()
+    return model
 
 
 class FeatureExtractor:

@@ -17,10 +17,14 @@ def inference(args):
     datasets = args.dataset
     model = args.model
     model_name = args.model_name
+    feat_type = args.feat_type
     vocoder_name = args.vocoder_name
     # === #
     for dataset in datasets:
-        cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -t /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --vocoder_name {vocoder_name}"
+        if feat_type is not None:
+            cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -t /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --feat_type {feat_type} --vocoder_name {vocoder_name}"
+        else:
+            cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -t /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --vocoder_name {vocoder_name}"
         print("[Command]", cmd)
         os.system(cmd)
 
@@ -80,6 +84,9 @@ if __name__ == "__main__":
     parser_inference.add_argument("--dataset", nargs="+")
     parser_inference.add_argument("--model", type=str)
     parser_inference.add_argument("--model_name", type=str, default="model.ckpt")
+    parser_inference.add_argument(
+        "--feat_type", type=str, default=None
+    )  # for S2VC only
     parser_inference.add_argument("--vocoder_name", type=str, default="vocoder.pt")
     parser_inference.set_defaults(func=inference)
 

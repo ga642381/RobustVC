@@ -30,6 +30,7 @@ def parse_args():
     parser.add_argument("--reload", action="store_true")
     parser.add_argument("--reload_dir", type=str, help="reload dir path")
     parser.add_argument("--model_name", type=str, default="model.ckpt")
+    parser.add_argument("--feat_type", type=str, default=None)
     parser.add_argument("--vocoder_name", type=str, default="vocoder.pt")
 
     return vars(parser.parse_args())
@@ -89,14 +90,17 @@ def main(
     reload_dir,
     model_name,
     vocoder_name,
+    **kwargs,
 ):
     """Main function"""
 
     # setting up
     inferencer_path = str(Path(root) / "inferencer").replace("/", ".")
     Inferencer = getattr(importlib.import_module(inferencer_path), "Inferencer")
-
-    inferencer = Inferencer(root, model_name, vocoder_name)
+    if kwargs["feat_type"] is not None:
+        inferencer = Inferencer(root, model_name, vocoder_name, **kwargs)
+    else:
+        inferencer = Inferencer(root, model_name, vocoder_name)
     device = inferencer.device
     sample_rate = inferencer.sample_rate
     logger.info("Inferencer is loaded from %s.", root)
@@ -150,7 +154,7 @@ def main(
         file_path = output_dir / f"{prefix}_to_{postfix}.wav"
         pair["converted"] = f"{prefix}_to_{postfix}.wav"
 
-        sf.write(file_path, waveform, sample_rate)
+        sf.write(file_path, waveform, sample_rate, subtype="FLOAT")
 
     # Save metadata
     metadata_output_path = output_dir / "metadata.json"

@@ -1,3 +1,6 @@
+all datasets:
+vad vad_demucs vad_metricgan vad_convtasnet vad_demand vad_demand_demucs vad_demand_metricgan vad_demand_convtasnet vad_wham vad_wham_demucs vad_wham_metricgan vad_wham_convtasnet vad_reverb vad_reverb_demucs vad_reverb_metricgan vad_reverb_convtasnet vad_band vad_band_demucs vad_band_metricgan vad_band_convtasnet vad_wham_reverb_band vad_wham_reverb_band_demucs vad_wham_reverb_band_metricgan vad_wham_reverb_band_convtasnet
+
 
 ====== create metadata
 python make_metadata.py VCTK /fortress/vc2021/robust-vc/assets/vctk_test_noisy VCTK /fortress/vc2021/robust-vc/assets/vctk_test_noisy -n 100 -nt 1 -o ./metadata
@@ -107,11 +110,15 @@ python vc_eval.py inference_attack --dataset vad_AdaIN-VC_attack_demucs --model 
 python vc_eval.py metric --metric SVAR --dataset vad_AdaIN-VC_attack_demucs --model AdaIN-VC --model_name model_mel80.ckpt
 
 # === 0929 attack S2VC ===#
-python vc_eval.py inference_attack --dataset vad_S2VC_attack --model S2VC-robust --model_name model_0927_b12_c10_50k.pt
-python vc_eval.py inference_attack --dataset vad_S2VC-robust_attack --model S2VC-robust --model_name model_0927_b12_c04_50k.pt
-python vc_eval.py inference_attack --dataset vad_S2VC-robust-adv_attack --model S2VC-robust --model_name model_adv_0927_b12_c04_50k.pt
+python vc_eval.py inference_attack --dataset vad_S2VC_attack --model S2VC-robust --model_name model_0927_b12_c10_50k.pt --vocoder_name vocoder_cpc.pt
+python vc_eval.py inference_attack --dataset vad_S2VC-robust_attack --model S2VC-robust --model_name model_0927_b12_c04_50k.pt --vocoder_name vocoder_cpc.pt
+python vc_eval.py inference_attack --dataset vad_S2VC-robust-adv_attack --model S2VC-robust --model_name model_adv_0927_b12_c04_50k.pt --vocoder_name vocoder_cpc.pt
+python vc_eval.py inference_attack --dataset vad_S2VC-robust-adv_attack --model S2VC-robust --model_name model_adv_0929_b12_c04_50k.pt --vocoder_name vocoder_cpc.pt
 
 python vc_eval.py metric --metric SVAR --dataset vad_S2VC_attack --model S2VC-robust --model_name model_0927_b12_c10_50k.pt
+python vc_eval.py metric --metric SVAR --dataset vad_S2VC-robust_attack --model S2VC-robust --model_name model_0927_b12_c04_50k.pt
+python vc_eval.py metric --metric SVAR --dataset vad_S2VC-robust-adv_attack --model S2VC-robust --model_name model_adv_0927_b12_c04_50k.pt
+python vc_eval.py metric --metric SVAR --dataset vad_S2VC-robust-adv_attack --model S2VC-robust --model_name model_adv_0929_b12_c04_50k.pt
 
 # === Self trained AdaIN-VC===#
 python vc_eval.py inference --dataset vad --model AdaIN-VC --model_name model_mel80_origin.ckpt --vocoder_name vocoder_mel80_self.pt
@@ -130,3 +137,42 @@ python vc_eval.py inference --dataset vad_demand_reverb_band_demucs vad_demand_r
 python vc_eval.py inference --dataset vad_demand_reverb_band vad_wham_reverb_band vad_wham_reverb_band_demucs vad_wham_reverb_band_metricgan --model AdaIN-VC --model_name model_mel80_origin.ckpt --vocoder_name vocoder_mel80_self.pt
 python vc_eval.py metric --metric MOS CER SVAR --dataset vad_demand_reverb_band_demucs vad_demand_reverb_band_metricgan --model AdaIN-VC --model_name model_mel80_origin.ckpt
 python vc_eval.py metric --metric MOS CER SVAR --dataset vad_demand_reverb_band vad_wham_reverb_band vad_wham_reverb_band_demucs vad_wham_reverb_band_metricgan --model AdaIN-VC --model_name model_mel80_origin.ckpt
+
+# === Wav2Vec evaluation === #
+python vc_eval.py inference --dataset vad --model S2VC-robust --feat_type wav2vec2 --model_name model_0930_wav2vec_b12_c04_50k.pt --vocoder_name vocoder_wav2vec.pt
+python vc_eval.py metric --metric MOS CER SVAR --dataset vad --model S2VC-robust --model_name model_0930_wav2vec_b12_c04_50k.pt
+
+python vc_eval.py inference --dataset vad --model S2VC-robust --feat_type wav2vec2 --model_name model_0930_wav2vec_b12_c04_100k.pt --vocoder_name vocoder_wav2vec.pt
+python vc_eval.py metric --metric MOS CER SVAR --dataset vad --model S2VC-robust --model_name model_0930_wav2vec_b12_c04_100k.pt
+# === 1001 S2VC === #
+python vc_eval.py inference --dataset vad_demucs vad_metricgan vad_wham_reverb_band vad_wham_reverb_band_demucs vad_wham_reverb_band_metricgan --model S2VC-robust --feat_type cpc --model_name model_0927_b12_c10_50k.pt --vocoder_name vocoder_cpc.pt
+python vc_eval.py metric --metric MOS CER SVAR --dataset vad_demucs vad_metricgan vad_wham_reverb_band vad_wham_reverb_band_demucs vad_wham_reverb_band_metricgan --model S2VC-robust--model_name model_0927_b12_c10_50k.pt
+
+
+# === 1001 ablation === #
+python vc_eval.py inference --dataset vad --model S2VC-robust --feat_type cpc --model_name model_0927_b12_c00_50k.pt --vocoder_name vocoder_cpc.pt
+
+
+# === convtasnet === #
+python vc_eval.py inference --dataset vad_convtasnet vad_demand_convtasnet vad_wham_convtasnet vad_reverb_convtasnet vad_band_convtasnet vad_wham_reverb_band_convtasnet  --model AdaIN-VC --model_name model_mel80_origin.ckpt --vocoder_name vocoder_mel80.pt
+
+python vc_eval.py inference --dataset vad_convtasnet vad_demand_convtasnet vad_wham_convtasnet vad_reverb_convtasnet vad_band_convtasnet vad_wham_reverb_band_convtasnet --model S2VC-robust --feat_type cpc --model_name model_0927_b12_c04_50k.pt --vocoder_name vocoder_cpc.pt
+python vc_eval.py metric --metric MOS CER SVAR --dataset vad_convtasnet vad_demand_convtasnet vad_wham_convtasnet vad_reverb_convtasnet vad_band_convtasnet vad_wham_reverb_band_convtasnet --model S2VC-robust --model_name model_0927_b12_c04_50k.pt
+
+# === 1002 wav2vec===#
+python vc_eval.py inference --dataset vad vad_wham_reverb_band vad_wham_reverb_band_demucs vad_wham_reverb_band_metricgan vad_demand_convtasnet --model S2VC-robust --feat_type wav2vec2 --model_name model_0930_wav2vec_b12_c10_50k.pt --vocoder_name vocoder_wav2vec.pt
+python vc_eval.py inference --dataset vad vad_wham_reverb_band --model S2VC-robust --feat_type wav2vec2 --model_name model_0930_wav2vec_b12_c04_50k.pt --vocoder_name vocoder_wav2vec.pt
+
+python vc_eval.py metric --metric MOS CER SVAR --dataset vad vad_wham_reverb_band --model S2VC-robust --model_name model_0930_wav2vec_b12_c04_50k.pt 
+
+# === 1002 ablation clean_ratio === #
+python vc_eval.py inference --dataset vad_wham_reverb_band --model S2VC-robust --feat_type cpc --model_name model_0927_b12_c00_50k.pt --vocoder_name vocoder_cpc.pt
+python vc_eval.py inference --dataset vad_wham_reverb_band --model S2VC-robust --feat_type cpc --model_name model_0926_b12_c02_50k.pt --vocoder_name vocoder_cpc.pt
+python vc_eval.py inference --dataset vad_wham_reverb_band --model S2VC-robust --feat_type cpc --model_name model_0927_b12_c06_50k.pt --vocoder_name vocoder_cpc.pt
+python vc_eval.py inference --dataset vad_wham_reverb_band --model S2VC-robust --feat_type cpc --model_name model_0927_b12_c08_50k.pt --vocoder_name vocoder_cpc.pt
+
+python vc_eval.py metric --metric CER SVAR  --dataset vad vad_wham_reverb_band --model S2VC-robust --model_name model_0927_b12_c00_50k.pt
+python vc_eval.py metric --metric CER SVAR  --dataset vad vad_wham_reverb_band --model S2VC-robust --model_name model_0926_b12_c02_50k.pt
+python vc_eval.py metric --metric CER SVAR  --dataset vad vad_wham_reverb_band --model S2VC-robust --model_name model_0927_b12_c04_50k.pt
+python vc_eval.py metric --metric CER SVAR  --dataset vad vad_wham_reverb_band --model S2VC-robust --model_name model_0927_b12_c06_50k.pt
+python vc_eval.py metric --metric CER SVAR  --dataset vad vad_wham_reverb_band --model S2VC-robust --model_name model_0927_b12_c08_50k.pt

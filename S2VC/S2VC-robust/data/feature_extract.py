@@ -2,9 +2,18 @@ from functools import partial
 from multiprocessing import Pool, cpu_count
 
 import torch
+from fairseq.checkpoint_utils import load_model_ensemble
 
-# from models import load_pretrained_wav2vec
 from .utils import log_mel_spectrogram
+
+
+def load_pretrained_wav2vec(ckpt_path: str):
+    """Load pretrained Wav2Vec model."""
+    model, cfg = load_model_ensemble([ckpt_path])
+    model = model[0]
+    model.remove_pretraining_modules()
+    model.eval()
+    return model
 
 
 class FeatureExtractor:
@@ -23,7 +32,10 @@ class FeatureExtractor:
             self.mode = 1
 
         elif feature_name == "wav2vec2":
-            self.extractor = load_pretrained_wav2vec(wav2vec2_path).eval().to(device)
+            print(wav2vec2_path)
+            self.extractor = (
+                load_pretrained_wav2vec(str(wav2vec2_path)).eval().to(device)
+            )
             self.mode = 2
 
         elif feature_name == "wav2vec2_mel":

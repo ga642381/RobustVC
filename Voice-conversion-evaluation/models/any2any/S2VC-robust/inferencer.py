@@ -9,17 +9,19 @@ from torch import Tensor
 from .feature_extract import FeatureExtractor
 from .utils import load_wav
 
-# from .models import load_pretrained_wav2vec
-# from .audioprocessor import AudioProcessor
-
 
 class Inferencer:
     """Inferencer"""
 
-    def __init__(self, root, model_name="model.ckpt", vocoder_name="vocoder.pt"):
+    def __init__(
+        self, root, model_name="model.ckpt", vocoder_name="vocoder.pt", feat_type="cpc"
+    ):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         checkpoint_dir = Path(root) / "checkpoints"
-        # wav2vec_path = checkpoint_dir / "wav2vec_small.pt"
+        if feat_type == "wav2vec2":
+            wav2vec_path = checkpoint_dir / "wav2vec_small.pt"
+        else:
+            wav2vec_path = None
         ckpt_path = checkpoint_dir / model_name
         vocoder_path = checkpoint_dir / vocoder_name
 
@@ -28,8 +30,8 @@ class Inferencer:
         self.vocoder = torch.jit.load(str(vocoder_path)).eval().to(device)
         self.device = device
         self.sample_rate = 16000
-        self.ref_feat_model = FeatureExtractor("cpc", None, device)
-        self.src_feat_model = FeatureExtractor("cpc", None, device)
+        self.ref_feat_model = FeatureExtractor(feat_type, wav2vec_path, device)
+        self.src_feat_model = FeatureExtractor(feat_type, wav2vec_path, device)
 
     def inference(self, src_wav: np.ndarray, tgt_wavs: List[np.ndarray]) -> Tensor:
         """Inference one utterance."""
