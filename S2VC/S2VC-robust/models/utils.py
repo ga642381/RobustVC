@@ -3,17 +3,16 @@
 import math
 
 import torch
+from fairseq.checkpoint_utils import load_model_ensemble
+from fairseq.models.wav2vec import Wav2Vec2Model
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import LambdaLR
-
-from fairseq.models.wav2vec import Wav2Vec2Model
 
 
 def load_pretrained_wav2vec(ckpt_path):
     """Load pretrained Wav2Vec model."""
-    ckpt = torch.load(ckpt_path)
-    model = Wav2Vec2Model.build_model(ckpt["args"], task=None)
-    model.load_state_dict(ckpt["model"])
+    model, cfg = load_model_ensemble([ckpt_path])
+    model = model[0]
     model.remove_pretraining_modules()
     model.eval()
     return model

@@ -25,7 +25,6 @@ def parse_args():
     parser.add_argument("noisy_data_dir", type=str)
     parser.add_argument("feature_name", type=str)
     parser.add_argument("save_dir", type=str)
-    parser.add_argument("--wav2vec_path", type=str, default=None)
     parser.add_argument(
         "--trim_method", choices=["librosa", "vad", "None"], default="None"
     )
@@ -39,7 +38,6 @@ def main(
     clean_data_dir,
     noisy_data_dir,
     feature_name,
-    wav2vec_path,
     save_dir,
     trim_method,
     n_workers,
@@ -81,8 +79,8 @@ def main(
         "cpc": "cpc_mel",
         "wav2vec2": "wav2vec2_mel",
     }
-    feat_extractor = FeatureExtractor(feature_name, wav2vec_path, device)
-    mel_extractor = FeatureExtractor(mapping[feature_name], wav2vec_path, device)
+
+    mel_extractor = FeatureExtractor(mapping[feature_name], None, device)
 
     # === loop dataloader === #
     pbar = tqdm.tqdm(total=len(dataset), ncols=0)

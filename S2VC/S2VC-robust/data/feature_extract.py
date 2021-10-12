@@ -1,14 +1,17 @@
 from functools import partial
 from multiprocessing import Pool, cpu_count
+from typing import List
 
 import torch
 from fairseq.checkpoint_utils import load_model_ensemble
+from torch.nn.utils.rnn import pad_sequence
 
 from .utils import log_mel_spectrogram
 
 
 def load_pretrained_wav2vec(ckpt_path: str):
     """Load pretrained Wav2Vec model."""
+    ckpt_path = str(ckpt_path)
     model, cfg = load_model_ensemble([ckpt_path])
     model = model[0]
     model.remove_pretraining_modules()
@@ -22,7 +25,7 @@ class FeatureExtractor:
         if feature_name in ["apc", "cpc", "timit_posteriorgram", "fbank"]:
             self.extractor = (
                 torch.hub.load(
-                    "s3prl/s3prl:f2114342ff9e813e18a580fa41418aee9925414e",
+                    "ga642381/s3prl:s2vc",
                     feature_name,
                     refresh=True,
                 )
@@ -32,10 +35,7 @@ class FeatureExtractor:
             self.mode = 1
 
         elif feature_name == "wav2vec2":
-            print(wav2vec2_path)
-            self.extractor = (
-                load_pretrained_wav2vec(str(wav2vec2_path)).eval().to(device)
-            )
+            self.extractor = load_pretrained_wav2vec(wav2vec2_path).eval().to(device)
             self.mode = 2
 
         elif feature_name == "wav2vec2_mel":
@@ -73,16 +73,22 @@ class FeatureExtractor:
             )
             exit()
 
-    def get_feature(self, wavs):
+    def get_feature(self, wavs: list) -> list:
+        # wavs : list of tensors, no padding
         if self.mode == 1:
             return self.extractor(wavs)
+
         elif self.mode == 2:
-            feats = []
-            for wav in wavs:
-                feat = self.extractor.extract_features(wav.unsqueeze(0), None)[
-                    0
-                ].squeeze(0)
-                feats.append(feat)
+            wav_lens = [len(wav) for wav in wavs]
+            wavs = pad_sequence(wavs, batch_first=True)
+            padding_mask = [
+                torch.arange(wavs.size(1)) >= wav_len for wav_len in wav_lens
+            ]
+            padding_mask = torch.stack(padding_mask).to(self.device)
+
+            feats = self.extractor.extract_features(wavs, padding_mask)["x"]
+            feats = [f for f in feats]
+
         elif self.mode == 3:
             wavs = [wav.cpu().numpy() for wav in wavs]
             feats = [self.extractor(wav) for wav in wavs]
