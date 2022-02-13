@@ -1,8 +1,0 @@
-sox
-gdown
-tqdm
-librosa
-soundfile
-argparse
-matplotlib
-tensorboard
