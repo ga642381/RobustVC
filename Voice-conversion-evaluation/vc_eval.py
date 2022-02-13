@@ -2,13 +2,13 @@ import argparse
 import os
 
 model_types = ["S2VC-robust", "AdaIN-VC-robust", "S2VC", "AdaIN-VC"]
-dataset = "demand"
+ROOT_DIR
 
 
 def make_metadata(args):
     n_samples = args.n
     # === #
-    cmd = f"python make_metadata.py VCTK /fortress/vc2021/robust-vc/assets/vctk_test_vad VCTK /fortress/vc2021/robust-vc/assets/vctk_test_vad -n {n_samples} -nt 1 -o ./metadata --s_seed 261 --t_seed 444"
+    cmd = f"python make_metadata.py VCTK ../assets/vctk_test_vad VCTK ../assets/vctk_test_vad -n {n_samples} -nt 1 -o ./metadata --s_seed 261 --t_seed 444"
     print("[Command]", cmd)
     os.system(cmd)
 
@@ -22,9 +22,9 @@ def inference(args):
     # === #
     for dataset in datasets:
         if feat_type is not None:
-            cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -t /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --feat_type {feat_type} --vocoder_name {vocoder_name}"
+            cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s ../assets/vctk_test_{dataset} -t ../assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --feat_type {feat_type} --vocoder_name {vocoder_name}"
         else:
-            cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -t /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --vocoder_name {vocoder_name}"
+            cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s ../assets/vctk_test_{dataset} -t ../assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --vocoder_name {vocoder_name}"
         print("[Command]", cmd)
         os.system(cmd)
 
@@ -36,7 +36,7 @@ def inference_attack(args):
     vocoder_name = args.vocoder_name
     # === #
     for dataset in datasets:
-        cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s /fortress/vc2021/robust-vc/assets/vctk_test_vad -t /fortress/vc2021/robust-vc/assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --vocoder_name {vocoder_name}"
+        cmd = f"python inference.py -m metadata/VCTK_to_VCTK.json -s ../assets/vctk_test_vad -t ../assets/vctk_test_{dataset} -o ./result/{dataset}_data -r models/any2any/{model} --model_name {model_name} --vocoder_name {vocoder_name}"
         print("[Command]", cmd)
         os.system(cmd)
 
@@ -66,7 +66,7 @@ def metric(args):
 
     if "SVAR" in metrics:
         for dataset in datasets:
-            cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/{model_name}/VCTK2VCTK/ -r metrics/speaker_verification -o ./result/{dataset}_data/{model}/{model_name} -t /fortress/vc2021/robust-vc/assets/vctk_test_vad --th metrics/speaker_verification/equal_error_rate/VCTK_eer.yaml"
+            cmd = f"python calculate_objective_metric.py -d ./result/{dataset}_data/{model}/{model_name}/VCTK2VCTK/ -r metrics/speaker_verification -o ./result/{dataset}_data/{model}/{model_name} -t ../assets/vctk_test_vad --th metrics/speaker_verification/equal_error_rate/VCTK_eer.yaml"
             print("[Command]", cmd)
             os.system(cmd)
 
