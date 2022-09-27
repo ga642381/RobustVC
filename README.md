@@ -26,9 +26,6 @@ Both **Speech Enhancement Concatenation** and **End-to-End Denoising Training** 
 - Pros: Combine Voice conversion and speech enhancement in a single model.
 - Cons: Need more resouces for training.
 
-## Code
-Please refer to [cyhuang-tw/robust-vc](https://github.com/cyhuang-tw/robust-vc)
-
 ## Demo Page
 
 https://cyhuang-tw.github.io/robust-vc-demo/
